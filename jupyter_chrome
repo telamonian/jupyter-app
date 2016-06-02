@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# start up a jupyter notebook kernel-thing in a new iterm window
+osascript -e 'activate application "iTerm"'
+osascript -e 'tell application "System Events" to keystroke "n" using command down'
+osascript -e 'tell application "iTerm" to tell current session of current window to write text "jupyter notebook --no-browser"'
+
+# sleep for a jot to give jupyter notebook a chance to finish starting up
+sleep .5
+
+# start up a new session of chrome pointed to the notebook which just started
+"/Applications/jupyter_chrome.app/Contents/MacOS/jupyter_chrome_exe" --user-data-dir=/tmp/jupyter_chrome --new-window 127.0.0.1:8888& "$@" > /dev/null 2>&1;

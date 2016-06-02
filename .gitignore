@@ -1,0 +1,27 @@
+# eclipse stuff
+.cproject
+.externalToolBuilders
+.pydevproject
+.project
+/.ptp-sync
+.ptp-sync-folder
+/.gdbinit
+.gdb_history
+/.settings
+
+# ipython notebook stuff
+#*.ipynb
+#.ipynb
+.ipynb_checkpoints
+
+# jetbrains stuff
+.idea
+*.iml
+
+# old or backup files
+bak_*
+old_*
+
+# os temporary files
+~$*
+.DS_Store
