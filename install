@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+appname=jupyter_chrome
+temp=$TMPDIR$(uuidgen)
+srcdir=$(dirname "$(stat -f "$0")")
+
+# install the app
+mkdir -p "$temp/mount"
+curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg > "${temp}/1.dmg"
+yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg"
+cp -r "$temp"/mount/*.app "/Applications/${appname}.app"
+hdiutil detach "${temp}/mount"
+rm -r "${temp}"
+
+# change the icon
+cp "${srcdir}/app.icns" "/Applications/${appname}.app/Contents/Resources/app.icns"
+
+# rename the chrome exe
+mv "/Applications/${appname}.app/Contents/MacOS/Google Chrome" "/Applications/${appname}.app/Contents/MacOS/jupyter_chrome_exe"
+
+# copy the script that'll be the actual exe to the app
+cp "${srcdir}/${appname}" "/Applications/${appname}.app/Contents/MacOS/"
+
+# modify the app's plist's exe to point to the script we just copied over
+plutil -replace CFBundleExecutable -string "${appname}" "/Applications/${appname}.app/Contents/Info.plist"

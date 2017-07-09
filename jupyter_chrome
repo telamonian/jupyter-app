@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+jchromeuserdir="$HOME/Library/Application Support/jupyter_chrome"
+
 # start up a jupyter notebook kernel-thing in a new iterm window
 osascript -e 'activate application "iTerm"'
 osascript -e 'tell application "System Events" to keystroke "n" using command down'
@@ -9,4 +11,4 @@ osascript -e 'tell application "iTerm" to tell current session of current window
 sleep .5
 
 # start up a new session of chrome pointed to the notebook which just started
-"/Applications/jupyter_chrome.app/Contents/MacOS/jupyter_chrome_exe" --user-data-dir=/tmp/jupyter_chrome --new-window 127.0.0.1:8888& "$@" > /dev/null 2>&1;
+"/Applications/jupyter_chrome.app/Contents/MacOS/jupyter_chrome_exe" --user-data-dir=$jchromeuserdir --new-window 127.0.0.1:8888& "$@" > /dev/null 2>&1;
