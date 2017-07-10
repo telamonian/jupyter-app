@@ -7,30 +7,30 @@ source "${srcdir}"/vars.sh
 temp=$TMPDIR$(uuidgen)
 
 # download the app
-echo "downloading vanilla google chrome..."
+printf "downloading vanilla google chrome...\n"
 mkdir -p "${temp}/mount"
 curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg > "${temp}/1.dmg"
-echo "done\n"
+printf "done\n\n"
 
 # install the app
-echo "installing vanilla google chrome..."
+printf "installing vanilla google chrome...\n"
 yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" > /dev/null 2>&1
 cp -r "$temp"/mount/*.app "/Applications/${appname}.app"
 hdiutil detach "${temp}/mount" > /dev/null 2>&1
 rm -r "${temp}"
-echo "done\n"
+printf "done\n\n"
 
 # change the icon
-echo "changing app iconn from chrome to jupyter..."
+printf "changing app iconn from chrome to jupyter...\n"
 cp "${srcdir}/app.icns" "/Applications/${appname}.app/Contents/Resources/app.icns"
-echo "done\n"
+printf "done\n\n"
 
 # rename the chrome exe
-echo "renaming chrome executable..."
+printf "renaming chrome executable...\n"
 mv "/Applications/${appname}.app/Contents/MacOS/Google Chrome" "/Applications/${appname}.app/Contents/MacOS/jupyter_chrome_exe"
-echo "done\n"
+printf "done\n\n"
 
-echo "copying executable scripts over to app..."
+printf "copying executable scripts over to app...\n"
 
 # copy the script that'll be the actual exe to the app
 cp "${srcdir}/${appname}" "/Applications/${appname}.app/Contents/MacOS/"
@@ -39,9 +39,9 @@ cp "${srcdir}/${appname}" "/Applications/${appname}.app/Contents/MacOS/"
 cp "${srcdir}/vars.sh" "/Applications/${appname}.app/Contents/MacOS/"
 cp "${srcdir}/${appname}_exe_script" "/Applications/${appname}.app/Contents/MacOS/"
 
-echo "done\n"
+printf "done\n\n"
 
 # modify the app's plist's exe to point to the script we just copied over
-echo "Modifying app's Info.plist to point to executable scripts..."
+printf "Modifying app's Info.plist to point to executable scripts...\n"
 plutil -replace CFBundleExecutable -string "${appname}" "/Applications/${appname}.app/Contents/Info.plist"
-echo "done\n"
+printf "done\n\n"

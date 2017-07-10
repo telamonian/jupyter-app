@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# get some project-wide vars
+srcdir=$(dirname "$(stat -f "$0")")
+source "${srcdir}"/vars.sh
+
+# remove the app
+printf "removing the app...\n"
+rm -rf "/Applications/${appname}.app"
+printf "done\n\n"
+
+# remove the user-data-dir
+printf "removing the user-data-dir...\n"
+rm -rf "${jchromeuserdir}"
+printf "done\n\n"
