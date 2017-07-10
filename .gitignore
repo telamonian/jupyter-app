@@ -25,3 +25,6 @@ old_*
 # os temporary files
 ~$*
 .DS_Store
+
+# vim tmp files
+*.swp
