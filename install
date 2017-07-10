@@ -21,7 +21,7 @@ rm -r "${temp}"
 printf "done\n\n"
 
 # change the icon
-printf "changing app iconn from chrome to jupyter...\n"
+printf "changing app icon from chrome to jupyter...\n"
 cp "${srcdir}/app.icns" "/Applications/${appname}.app/Contents/Resources/app.icns"
 printf "done\n\n"
 

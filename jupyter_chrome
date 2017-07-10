@@ -4,7 +4,12 @@
 srcdir=$(dirname "$(stat -f "$0")")
 source "${srcdir}"/vars.sh
 
-# start up a jupyter notebook kernel-thing in a new iterm window
+# start up iTerm2, or switch to it if its already running
 osascript -e 'activate application "iTerm"'
+
+# create a new terminal window. Focus switches to the new window automatically
 osascript -e 'tell application "System Events" to keystroke "n" using command down'
+
+# run a new instance of jupyter notebook and a separate browset to go with it
+# NB: the trick to get this to work is the %s symbol in the --browser argument, which tells the webbrowser pacakge (which notebook depends on) where to insert a url to be opened in the browser command
 osascript -e 'tell application "iTerm" to tell current session of current window to write text "jupyter notebook --browser=\"/Applications/jupyter_chrome.app/Contents/MacOS/jupyter_chrome_exe_script --new-window %s\""'
