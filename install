@@ -84,9 +84,9 @@ if [ -f "${vars_path}" ]; then
 fi
 for i in {TERM_NAME,JUPYTER_BIN,ABS_INNER_WRAP,ABS_APP_SUPPORT,ABS_APP_BIN}; do
     if [ "$dryrun" = true ]; then
-        dryecho echo "$i=${!i}" \>\> "${ABS_APP_PATH}"/Contents/MacOS/vars
+        dryecho echo "$i=\"${!i}\"" \>\> "${ABS_APP_PATH}"/Contents/MacOS/vars
     else
-        echo "$i=${!i}" >> "${ABS_APP_PATH}"/Contents/MacOS/vars
+        echo "$i=\"${!i}\"" >> "${ABS_APP_PATH}"/Contents/MacOS/vars
     fi
 done
 printf "done\n\n"

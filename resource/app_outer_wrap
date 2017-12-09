@@ -12,11 +12,11 @@ jupyter_bin="${JUPYTER_BIN}"
 inner_wrap="${ABS_INNER_WRAP}"
 
 # start up iTerm2, or switch to it if its already running
-osascript -e 'activate application "${term_name}"'
+osascript -e "activate application \"${term_name}\""
 
 # create a new terminal window. Focus switches to the new window automatically
-osascript -e 'tell application "System Events" to keystroke "n" using command down'
+osascript -e "tell application \"System Events\" to keystroke \"n\" using command down"
 
 # run a new instance of jupyter notebook and a separate browset to go with it
 # NB: the trick to get this to work is the %s symbol in the --browser argument, which tells the webbrowser pacakge (which notebook depends on) where to insert a url to be opened in the browser command
-osascript -e 'tell application "${term_name}" to tell current session of current window to write text "${jupyter_bin} notebook --browser=\"${inner_wrap} --new-window %s\""'
+osascript -e "tell application \"${term_name}\" to tell current session of current window to write text \"${jupyter_bin} notebook --browser=\\\"${inner_wrap} --new-window %s\\\"\""
