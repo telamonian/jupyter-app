@@ -1,15 +1,62 @@
 #!/usr/bin/env bash
 
-# get some project-wide vars
-srcdir=$(dirname "$(stat -f "$0")")
-source "${srcdir}"/globals
+shopt -s expand_aliases
+set -e
+
+# set up command line parsing via getopts
+# Usage info
+show_help() {
+cat << EOF
+Usage: ${0##*/} [-cd]
+Set up links between your {HOME} dir and the dotfiles in {DOT_HOME}
+
+    -h    Display this help and exit.
+    -d    Dry run. For debug purposes, echo commands instead of running them.
+EOF
+}
+
+# Initialize our own variables:
+dryrun=false
+
+OPTIND=1
+# Resetting OPTIND is necessary if getopts was used previously in the script.
+# It is a good idea to make OPTIND local if you process options in a function.
+
+while getopts hdr opt; do
+    case $opt in
+        h)
+            show_help
+            exit 0
+            ;;
+        d)  dryrun=true
+            ;;
+        *)
+            show_help >&2
+            exit 1
+            ;;
+    esac
+done
+shift "$((OPTIND-1))"   # Discard the options and sentinel --
+
+# define the dryrun echo command as appropriate
+alias dryecho=
+if [ "$dryrun" = true ]; then
+    alias dryecho='echo'
+fi
+
+# get some user-defined and project-wide vars
+reldir=$(dirname "$(stat -f "$0")")
+source "${reldir}"/resource/globals
+
+app_path="${ABS_APP_PATH}"
+app_support="${ABS_APP_SUPPORT}"
 
 # remove the app
 printf "removing the app...\n"
-rm -rf "/Applications/${APP_NAME}.app"
+dryecho rm -rf "${app_path}"
 printf "done\n\n"
 
 # remove the user-data-dir
 printf "removing the user-data-dir...\n"
-rm -rf "${ABS_APP_SUPPORT}"
+dryecho rm -rf "${app_support}"
 printf "done\n\n"

@@ -38,6 +38,11 @@ while getopts hdr opt; do
 done
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
+# define the dryrun echo command as appropriate
+alias dryecho=
+if [ "$dryrun" = true ]; then
+    alias dryecho='echo'
+fi
 
 # get some user-defined and project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
@@ -45,11 +50,6 @@ globals_src="${reldir}"/resource/globals
 source ${globals_src}
 
 temp=$TMPDIR$(uuidgen)
-
-alias dryecho=
-if [ "$dryrun" = true ]; then
-    alias dryecho='echo'
-fi
 
 # download the app
 printf "downloading vanilla google chrome...\n"
