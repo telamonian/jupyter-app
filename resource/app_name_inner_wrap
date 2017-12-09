@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# This inner wrapper is installed alongside the outer wrapper.
+# Its job is to handle launching the actual browser exe.
+
+# get some project-wide vars
+reldir=$(dirname "$(stat -f "$0")")
+source "${reldir}"/globals
+
+app_support="${ABS_APP_SUPPORT}"
+app_bin="${ABS_APP_BIN}"
+
+# create the user-data-dir, if necessary
+mkdir -p ${app_support}
+
+# start up a new instance of chrome with the appropriate user-data-dir
+"${app_bin}" --user-data-dir="${app_support}" "$@" > /dev/null 2>&1

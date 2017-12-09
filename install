@@ -1,55 +1,108 @@
 #!/usr/bin/env bash
 
-# get some project-wide vars
+set -e
+
+# set up command line parsing via getopts
+# Usage info
+show_help() {
+cat << EOF
+Usage: ${0##*/} [-cd]
+Set up links between your {HOME} dir and the dotfiles in {DOT_HOME}
+
+    -h    Display this help and exit.
+    -d    Dry run. For debug purposes, echo commands instead of running them.
+EOF
+}
+
+# Initialize our own variables:
+dryrun=false
+
+OPTIND=1
+# Resetting OPTIND is necessary if getopts was used previously in the script.
+# It is a good idea to make OPTIND local if you process options in a function.
+
+while getopts hdr opt; do
+    case $opt in
+        h)
+            show_help
+            exit 0
+            ;;
+        d)  dryrun=true
+            ;;
+        *)
+            show_help >&2
+            exit 1
+            ;;
+    esac
+done
+shift "$((OPTIND-1))"   # Discard the options and sentinel --
+
+if [ "$dryrun" = true ]; then
+    dryecho=echo
+else
+    dryecho=
+fi
+
+# get some user-defined and project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
-source "${reldir}"/globals
+globals_src="${reldir}"/resource/globals
+source ${globals_src}
 
 temp=$TMPDIR$(uuidgen)
 
 # download the app
 printf "downloading vanilla google chrome...\n"
-mkdir -p "${temp}/mount"
-curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg > "${temp}/1.dmg"
+dryecho mkdir -p "${temp}/mount"
+dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg > "${temp}/1.dmg"
 printf "done\n\n"
 
 # install the app
 printf "installing vanilla google chrome...\n"
-yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" > /dev/null 2>&1
-cp -r "$temp"/mount/*.app "/Applications/${APP_NAME}.app"
-hdiutil detach "${temp}/mount" > /dev/null 2>&1
+if [ "$dryrun" = true ]; then
+    # special handling is required for all of the weird > and | characters in this block of commands
+    dryecho yes ^| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" ^> /dev/null 2^>&1
+    dryecho cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
+    dryecho hdiutil detach "${temp}/mount" ^> /dev/null 2^>&1
+else
+    yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" > /dev/null 2>&1
+    cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
+    hdiutil detach "${temp}/mount" > /dev/null 2>&1
+fi
 printf "done\n\n"
 
 printf "cleaning up install files...\n"
-rm -r "${temp}"
+dryecho rm -r "${temp}"
 printf "done\n\n"
 
 # change the icon
 printf "changing app icon from chrome to jupyter...\n"
-cp "${srcdir}/app.icns" "/Applications/${APP_NAME}.app/Contents/Resources/app.icns"
+dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
 printf "done\n\n"
 
 # rename the chrome exe
 printf "renaming chrome executable...\n"
-mv "/Applications/${APP_NAME}.app/Contents/MacOS/Google Chrome" "/Applications/${APP_NAME}.app/Contents/MacOS/jupyter_chrome_exe"
+dryecho mv "${ABS_APP_BIN_SRC}" "${ABS_APP_BIN}"
 printf "done\n\n"
 
 printf "copying executable scripts over to app...\n"
 
-# copy over to the app the script that'll serve as the actual exe
-cp "${srcdir}/${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/MacOS/"
+# copy over the outer wrapper script, which handles the terminal window
+dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
 
-# copy some support scripts
-cp "${srcdir}/globals" "/Applications/${APP_NAME}.app/Contents/MacOS/"
-cp "${srcdir}/${APP_NAME}_exe_script" "/Applications/${APP_NAME}.app/Contents/MacOS/"
+# copy over the inner wrapper script, which automatically passes certain arguments to the chrome bin
+dryecho cp "${ABS_INNER_WRAP_SRC}" "${ABS_INNER_WRAP}"
+
+# copy over a script containing variables the other scripts depend upon
+dryecho cp "${globals_src}" "${ABS_APP_PATH}"/Contents/MacOS
 
 printf "done\n\n"
 
 # modify the app's plist's exe to point to the script we just copied over
 printf "Modifying app's Info.plist to point to executable scripts...\n"
-plutil -replace CFBundleExecutable -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"
 
 # modify the app's plist's bundle name
 printf "Modifying budle name in app's Info.plist...\n"
-plutil -replace CFBundleName -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace CFBundleName -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"

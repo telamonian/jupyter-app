@@ -11,5 +11,5 @@ printf "done\n\n"
 
 # remove the user-data-dir
 printf "removing the user-data-dir...\n"
-rm -rf "${ABS_SUPPORT}"
+rm -rf "${ABS_APP_SUPPORT}"
 printf "done\n\n"

@@ -1,15 +1,57 @@
 #!/usr/bin/env bash
 
+## init
 # project/repo root
 ABS_ROOT=$(cd "$(dirname "$(stat -f "${BASH_SOURCE}")")"/.. && pwd -P)
 
+# as soon as possible, source the user defined options/vars
+source "${ABS_ROOT}"/install.conf
+
+
+## names and relative paths
 # relative paths (with respect to ABS_ROOT) of important directories
 RESOURCE="resource"
 EXTENSION_JSON="${RESOURCE}"/external_extensions_json
 SCRIPT="script"
 
-# source the user defined options/vars
-source "${ABS_ROOT}"/install.conf
+# names of important files
+ICNS=app.icns
+APP_BIN_GOOGLE="Google Chrome"
+APP_BIN="${APP_NAME}_bin"
+OUTER_WRAP="${APP_NAME}_outer_wrap"
+INNER_WRAP="${APP_NAME}_inner_wrap"
 
-# other important directories
-ABS_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
+
+## absolute paths
+# absolute app installation path
+ABS_APP_PATH="${APP_DIR}"/"${APP_NAME}.app"
+
+# the application support dir
+ABS_APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
+
+# absolute paths to various dirs within the .app bundle
+ABS_CONTENTS="${ABS_APP_PATH}"/Contents/"${APP_NAME}"
+ABS_RESOURCES="${ABS_CONTENTS}"/Resources
+ABS_MACOS="${ABS_CONTENTS}"/MacOS
+
+# absolute src and dst paths for the custom app icons file
+ABS_ICONS_SRC="${ABS_ROOT}"/"${RESOURCE}"/"${ICNS}"
+ABS_ICONS="${ABS_RESOURCES}"
+
+# absolute src and dst paths for renaming the original exe
+ABS_APP_BIN_SRC="${ABS_MACOS}"/"${APP_BIN_GOOGLE}"
+ABS_APP_BIN="${ABS_MACOS}"/"${APP_BIN}"
+
+# absolute src and dst paths for the outer wrapper, the script that replaces the original exe
+ABS_OUTER_WRAP_SRC="${ABS_ROOT}"/"${RESOURCE}"/"${OUTER_WRAP}"
+ABS_OUTER_WRAP="${ABS_MACOS}"/"${APP_NAME}"
+
+# absolute src and dst paths for the inner wrapper, which gets call by the outer wrapper and in turn calls the original exe
+ABS_INNER_WRAP_SRC="${ABS_ROOT}"/"${RESOURCE}"/"${INNER_WRAP}"
+ABS_INNER_WRAP="${ABS_MACOS}"
+
+
+## paths related to automatic installation of chrome themes/extensions
+# absolute src and dst paths for the extension .json files that we've packaged
+ABS_EXTENSION_JSON_SRC=$(find "${ABS_ROOT}"/"${EXTENSION_JSON}" -name "*.json")
+ABS_EXTENSION_JSON="${ABS_APP_SUPPORT}/External Extensions"
