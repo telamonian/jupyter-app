@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+shopt -s expand_aliases
 set -e
 
 # set up command line parsing via getopts
@@ -37,11 +38,6 @@ while getopts hdr opt; do
 done
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
-if [ "$dryrun" = true ]; then
-    dryecho=echo
-else
-    dryecho=
-fi
 
 # get some user-defined and project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
@@ -50,19 +46,24 @@ source ${globals_src}
 
 temp=$TMPDIR$(uuidgen)
 
+alias dryecho=
+if [ "$dryrun" = true ]; then
+    alias dryecho='echo'
+fi
+
 # download the app
 printf "downloading vanilla google chrome...\n"
 dryecho mkdir -p "${temp}/mount"
-dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg > "${temp}/1.dmg"
+dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o "${temp}/1.dmg"
 printf "done\n\n"
 
 # install the app
 printf "installing vanilla google chrome...\n"
 if [ "$dryrun" = true ]; then
     # special handling is required for all of the weird > and | characters in this block of commands
-    dryecho yes ^| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" ^> /dev/null 2^>&1
+    dryecho yes \| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" \> /dev/null 2\>\&1
     dryecho cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
-    dryecho hdiutil detach "${temp}/mount" ^> /dev/null 2^>&1
+    dryecho hdiutil detach "${temp}/mount" \> /dev/null 2\>\&1
 else
     yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" > /dev/null 2>&1
     cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
