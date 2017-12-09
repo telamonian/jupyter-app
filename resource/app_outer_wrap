@@ -5,7 +5,7 @@
 
 # get some project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
-source "${reldir}"/globals
+source "${reldir}"/vars
 
 term_name="${TERM_NAME}"
 jupyter_bin="${JUPYTER_BIN}"

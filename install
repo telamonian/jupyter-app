@@ -75,6 +75,22 @@ printf "cleaning up install files...\n"
 dryecho rm -r "${temp}"
 printf "done\n\n"
 
+# create a script with the vars that the outer and inner wrappers need
+printf "creating a script to hold the user set options...\n"
+vars_path="${ABS_APP_PATH}"/Contents/MacOS/vars
+if [ -f "${vars_path}" ]; then
+    # we use append in the loop below, so delete the vars file if it already exists
+    dryecho rm "${vars_path}"
+fi
+for i in {TERM_NAME,JUPYTER_BIN,ABS_INNER_WRAP,ABS_APP_SUPPORT,ABS_APP_BIN}; do
+    if [ "$dryrun" = true ]; then
+        dryecho echo "$i=${!i}" \>\> "${ABS_APP_PATH}"/Contents/MacOS/vars
+    else
+        echo "$i=${!i}" >> "${ABS_APP_PATH}"/Contents/MacOS/vars
+    fi
+done
+printf "done\n\n"
+
 # change the icon
 printf "changing app icon from chrome to jupyter...\n"
 dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
@@ -94,7 +110,7 @@ dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
 dryecho cp "${ABS_INNER_WRAP_SRC}" "${ABS_INNER_WRAP}"
 
 # copy over a script containing variables the other scripts depend upon
-dryecho cp "${globals_src}" "${ABS_APP_PATH}"/Contents/MacOS
+#dryecho cp "${globals_src}" "${ABS_APP_PATH}"/Contents/MacOS"
 
 printf "done\n\n"
 

@@ -5,7 +5,7 @@
 
 # get some project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
-source "${reldir}"/globals
+source "${reldir}"/vars
 
 app_support="${ABS_APP_SUPPORT}"
 app_bin="${ABS_APP_BIN}"
