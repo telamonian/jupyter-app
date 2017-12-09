@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
-RESOURCE="resource"
-
+# project/repo root
 ABS_ROOT=$(cd "$(dirname "$(stat -f "${BASH_SOURCE}")")"/.. && pwd -P)
 
+# relative paths (with respect to ABS_ROOT) of important directories
+RESOURCE="resource"
+EXTENSION_JSON="${RESOURCE}"/external_extensions_json
+SCRIPT="script"
+
+# source the user defined options/vars
+source "${ABS_ROOT}"/install.conf
+
+# other important directories
 ABS_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
