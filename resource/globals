@@ -55,7 +55,9 @@ ABS_INNER_WRAP_SRC="${ABS_ROOT}"/"${RESOURCE}"/"${INNER_WRAP_SRC}"
 ABS_INNER_WRAP="${ABS_MACOS}"/"${INNER_WRAP}"
 
 
-## paths related to automatic installation of chrome themes/extensions
-# absolute src and dst paths for the extension .json files that we've packaged
-ABS_EXTENSION_JSON_SRC=$(find "${ABS_ROOT}"/"${EXTENSION_JSON}" -name "*.json")
-ABS_EXTENSION_JSON="${ABS_APP_SUPPORT}/External Extensions"
+## paths related to automatic installation of chrome themes/extensions. Only bother with these if the EXTENSIONS option is selected.
+if [ "$EXTENSIONS" = true ]; then
+    # absolute src and dst paths for the extension .json files that we've packaged
+    ABS_EXTENSION_JSON_SRC=$(find "${ABS_ROOT}"/"${EXTENSION_JSON}" -name "*.json")
+    ABS_EXTENSION_JSON="${ABS_APP_SUPPORT}/External Extensions"
+fi

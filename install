@@ -60,7 +60,7 @@ printf "done\n\n"
 # install the app
 printf "installing vanilla google chrome...\n"
 if [ "$dryrun" = true ]; then
-    # special handling is required for all of the weird > and | characters in this block of commands
+    # special dryrun handling is required here due to all of the > and | characters
     dryecho yes \| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" \> /dev/null 2\>\&1
     dryecho cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
     dryecho hdiutil detach "${temp}/mount" \> /dev/null 2\>\&1
@@ -84,6 +84,7 @@ if [ -f "${vars_path}" ]; then
 fi
 for i in {TERM_NAME,JUPYTER_BIN,ABS_INNER_WRAP,ABS_APP_SUPPORT,ABS_APP_BIN}; do
     if [ "$dryrun" = true ]; then
+        # special dryrun handling is required here due to the >> digraph
         dryecho echo "$i=\"${!i}\"" \>\> "${ABS_APP_PATH}"/Contents/MacOS/vars
     else
         echo "$i=\"${!i}\"" >> "${ABS_APP_PATH}"/Contents/MacOS/vars
@@ -123,3 +124,13 @@ printf "done\n\n"
 printf "Modifying budle name in app's Info.plist...\n"
 dryecho plutil -replace CFBundleName -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"
+
+if [ "$EXTENSIONS" = true ]; then
+    printf "Adding extension manifests to ${ABS_EXTENSION_JSON}...\n"
+    # create the External Extensions dir if it doesn't exist
+    dryecho mkdir -p "${ABS_EXTENSION_JSON}"
+    for extjson in "${ABS_EXTENSION_JSON_SRC}"; do
+        dryecho cp "${extjson}" "${ABS_EXTENSION_JSON}"
+    done
+    printf "done\n\n"
+fi
