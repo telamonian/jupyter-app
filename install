@@ -17,6 +17,9 @@ printf "installing vanilla google chrome...\n"
 yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" > /dev/null 2>&1
 cp -r "$temp"/mount/*.app "/Applications/${appname}.app"
 hdiutil detach "${temp}/mount" > /dev/null 2>&1
+printf "done\n\n"
+
+printf "cleaning up install files...\n"
 rm -r "${temp}"
 printf "done\n\n"
 
@@ -44,4 +47,9 @@ printf "done\n\n"
 # modify the app's plist's exe to point to the script we just copied over
 printf "Modifying app's Info.plist to point to executable scripts...\n"
 plutil -replace CFBundleExecutable -string "${appname}" "/Applications/${appname}.app/Contents/Info.plist"
+printf "done\n\n"
+
+# modify the app's plist's bundle name
+printf "Modifying budle name in app's Info.plist...\n"
+plutil -replace CFBundleName -string "${appname}" "/Applications/${appname}.app/Contents/Info.plist"
 printf "done\n\n"
