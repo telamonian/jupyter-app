@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# get some project-wide vars
+reldir=$(dirname "$(stat -f "$0")")
+source "${reldir}"/globals
+
+# create the user-data-dir, if necessary
+mkdir -p ${ABS_SUPPORT}
+
+# start up a new instance of chrome with the appropriate user-data-dir
+"/Applications/${APP_NAME}.app/Contents/MacOS/jupyter_chrome_exe" --user-data-dir="${ABS_SUPPORT}" "$@" > /dev/null 2>&1

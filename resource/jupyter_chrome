@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # get some project-wide vars
-srcdir=$(dirname "$(stat -f "$0")")
-source "${srcdir}"/vars.sh
+reldir=$(dirname "$(stat -f "$0")")
+source "${reldir}"/globals
 
 # start up iTerm2, or switch to it if its already running
 osascript -e 'activate application "iTerm"'

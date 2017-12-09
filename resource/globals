@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+RESOURCE="resource"
+
+ABS_ROOT=$(cd "$(dirname "$(stat -f "${BASH_SOURCE}")")"/.. && pwd -P)
+
+ABS_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"

@@ -2,14 +2,14 @@
 
 # get some project-wide vars
 srcdir=$(dirname "$(stat -f "$0")")
-source "${srcdir}"/vars.sh
+source "${srcdir}"/globals
 
 # remove the app
 printf "removing the app...\n"
-rm -rf "/Applications/${appname}.app"
+rm -rf "/Applications/${APP_NAME}.app"
 printf "done\n\n"
 
 # remove the user-data-dir
 printf "removing the user-data-dir...\n"
-rm -rf "${jchromeuserdir}"
+rm -rf "${ABS_SUPPORT}"
 printf "done\n\n"

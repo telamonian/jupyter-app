@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # get some project-wide vars
-srcdir=$(dirname "$(stat -f "$0")")
-source "${srcdir}"/vars.sh
+reldir=$(dirname "$(stat -f "$0")")
+source "${reldir}"/globals
 
 temp=$TMPDIR$(uuidgen)
 
@@ -15,7 +15,7 @@ printf "done\n\n"
 # install the app
 printf "installing vanilla google chrome...\n"
 yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" > /dev/null 2>&1
-cp -r "$temp"/mount/*.app "/Applications/${appname}.app"
+cp -r "$temp"/mount/*.app "/Applications/${APP_NAME}.app"
 hdiutil detach "${temp}/mount" > /dev/null 2>&1
 printf "done\n\n"
 
@@ -25,31 +25,31 @@ printf "done\n\n"
 
 # change the icon
 printf "changing app icon from chrome to jupyter...\n"
-cp "${srcdir}/app.icns" "/Applications/${appname}.app/Contents/Resources/app.icns"
+cp "${srcdir}/app.icns" "/Applications/${APP_NAME}.app/Contents/Resources/app.icns"
 printf "done\n\n"
 
 # rename the chrome exe
 printf "renaming chrome executable...\n"
-mv "/Applications/${appname}.app/Contents/MacOS/Google Chrome" "/Applications/${appname}.app/Contents/MacOS/jupyter_chrome_exe"
+mv "/Applications/${APP_NAME}.app/Contents/MacOS/Google Chrome" "/Applications/${APP_NAME}.app/Contents/MacOS/jupyter_chrome_exe"
 printf "done\n\n"
 
 printf "copying executable scripts over to app...\n"
 
-# copy the script that'll be the actual exe to the app
-cp "${srcdir}/${appname}" "/Applications/${appname}.app/Contents/MacOS/"
+# copy over to the app the script that'll serve as the actual exe
+cp "${srcdir}/${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/MacOS/"
 
 # copy some support scripts
-cp "${srcdir}/vars.sh" "/Applications/${appname}.app/Contents/MacOS/"
-cp "${srcdir}/${appname}_exe_script" "/Applications/${appname}.app/Contents/MacOS/"
+cp "${srcdir}/globals" "/Applications/${APP_NAME}.app/Contents/MacOS/"
+cp "${srcdir}/${APP_NAME}_exe_script" "/Applications/${APP_NAME}.app/Contents/MacOS/"
 
 printf "done\n\n"
 
 # modify the app's plist's exe to point to the script we just copied over
 printf "Modifying app's Info.plist to point to executable scripts...\n"
-plutil -replace CFBundleExecutable -string "${appname}" "/Applications/${appname}.app/Contents/Info.plist"
+plutil -replace CFBundleExecutable -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"
 
 # modify the app's plist's bundle name
 printf "Modifying budle name in app's Info.plist...\n"
-plutil -replace CFBundleName -string "${appname}" "/Applications/${appname}.app/Contents/Info.plist"
+plutil -replace CFBundleName -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"
