@@ -56,7 +56,9 @@ The default install should work in most cases. However, if you want to customize
 
 I've been a user of IPython and Jupyter for years, and I'm a big fan. The notebooks are the perfect middle ground in between coding on the command line and full-on scripting. My biggest complaint is that their performance, while not abysmal, is not so great. When I have a long notebook, or a short notebook with 4 or 5 figures or long output cells, there tends to be quite a bit of lag.
 
-So what I've wanted for a while is a dedicated Jupyter application, one that isn't bogged down by unnecessary extensions (adblock, for example) or the 20 Wikipedia tabs I happen to have open at the time. After trying many different browsers and standalone projects (most notably [pineapple](https://github.com/nwhitehead/pineapple)), I found that none of them were as fast as stock Chrome when it came to running a notebook. I started to wonder if it was possible to run two separate copies of Chrome side-by-side... and well, after a year of (extremely sporadic) development, here we are.
+So what I've wanted for a while is a dedicated Jupyter application, one that isn't bogged down by unnecessary extensions (adblock, for example) or the 20 Wikipedia tabs I happen to have open at the time. After trying many different browsers and standalone projects (most notably [pineapple](https://github.com/nwhitehead/pineapple)), I found that none of them were as fast as stock Chrome when it came to running a notebook. I started to wonder if it was possible to run two separate copies of Chrome side-by-side... and well, after a year of tinkering, here we are.
+
+I figured that a patched copy of Chrome would be hard to maintain with the march of their versions, not to mention the copyright issues. Instead, I designed Jupyter-app as a set of wrappers, and made only minimal changes to the underlying app and its contents. So far this approach has worked out well, as I've been able to get Chrome to do (almost) everything I've wanted by tweaking the behavior of the program during its kickoff.
 
 ## Future work
 - Add a command-line only workflow
