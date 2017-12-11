@@ -3,10 +3,6 @@
 # This inner wrapper is installed alongside the outer wrapper.
 # Its job is to handle launching the actual browser exe.
 
-# get some project-wide vars
-reldir=$(dirname "$(stat -f "$0")")
-source "${reldir}"/vars
-
 app_support="${ABS_APP_SUPPORT}"
 app_bin="${ABS_APP_BIN}"
 

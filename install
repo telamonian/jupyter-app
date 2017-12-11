@@ -15,20 +15,25 @@ Set up links between your {HOME} dir and the dotfiles in {DOT_HOME}
 EOF
 }
 
-# Initialize our own variables:
+# if true, perform a dryrun
 dryrun=false
+
+# for internal dev purposes.
+testmode=false
 
 OPTIND=1
 # Resetting OPTIND is necessary if getopts was used previously in the script.
 # It is a good idea to make OPTIND local if you process options in a function.
 
-while getopts hdr opt; do
+while getopts hdtr opt; do
     case $opt in
         h)
             show_help
             exit 0
             ;;
         d)  dryrun=true
+            ;;
+        t)  testmode=true
             ;;
         *)
             show_help >&2
@@ -44,89 +49,108 @@ if [ "$dryrun" = true ]; then
     alias dryecho='echo'
 fi
 
+# helper function(s)
+sedvar() {
+    fname=$1
+    shift 1
+
+    for var in $@; do
+        # the \$[{]* ... [}]* part will match vars with or without curly braces
+        dryecho sed -i '' "s#\$[{]*$var[}]*#${!var}#g" ${fname}
+    done
+}
+
 # get some user-defined and project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
 globals_src="${reldir}"/resource/globals
 source ${globals_src}
 
+
+# make a temporary dir
 temp=$TMPDIR$(uuidgen)
+dryecho mkdir -p "${temp}/mount"
+
+
+# decide where to save the chrome .dmg
+if [ "$testmode" = true ]; then
+    dmgloc='./chrome.dmg'
+else
+    dmgloc="${temp}/1.dmg"
+fi
+
 
 # download the app
-printf "downloading vanilla google chrome...\n"
-dryecho mkdir -p "${temp}/mount"
-dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o "${temp}/1.dmg"
-printf "done\n\n"
+if ! [ "$testmode" = true -a -f ${dmgloc} ]; then
+    printf "downloading vanilla google chrome...\n"
+    dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o ${dmgloc}
+    printf "done\n\n"
+fi
+
 
 # install the app
 printf "installing vanilla google chrome...\n"
 if [ "$dryrun" = true ]; then
     # special dryrun handling is required here due to all of the > and | characters
-    dryecho yes \| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" \> /dev/null 2\>\&1
+    dryecho yes \| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${dmgloc} \> /dev/null 2\>\&1
     dryecho cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
     dryecho hdiutil detach "${temp}/mount" \> /dev/null 2\>\&1
 else
-    yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" "${temp}/1.dmg" > /dev/null 2>&1
+    yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${dmgloc} > /dev/null 2>&1
     cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
     hdiutil detach "${temp}/mount" > /dev/null 2>&1
 fi
 printf "done\n\n"
 
-printf "cleaning up install files...\n"
+
+# clean up the temp dir
+printf "cleaning up google chrome install files...\n"
 dryecho rm -r "${temp}"
 printf "done\n\n"
 
-# create a script with the vars that the outer and inner wrappers need
-printf "creating a script to hold the user set options...\n"
-vars_path="${ABS_APP_PATH}"/Contents/MacOS/vars
-if [ -f "${vars_path}" ]; then
-    # we use append in the loop below, so delete the vars file if it already exists
-    dryecho rm "${vars_path}"
-fi
-for i in {TERM_NAME,JUPYTER_BIN,ABS_INNER_WRAP,ABS_APP_SUPPORT,ABS_APP_BIN}; do
-    if [ "$dryrun" = true ]; then
-        # special dryrun handling is required here due to the >> digraph
-        dryecho echo "$i=\"${!i}\"" \>\> "${ABS_APP_PATH}"/Contents/MacOS/vars
-    else
-        echo "$i=\"${!i}\"" >> "${ABS_APP_PATH}"/Contents/MacOS/vars
-    fi
-done
-printf "done\n\n"
 
 # change the icon
 printf "changing app icon from chrome to jupyter...\n"
 dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
 printf "done\n\n"
 
+
 # rename the chrome exe
 printf "renaming chrome executable...\n"
 dryecho mv "${ABS_APP_BIN_SRC}" "${ABS_APP_BIN}"
 printf "done\n\n"
 
-printf "copying executable scripts over to app...\n"
 
 # copy over the outer wrapper script, which handles the terminal window
+printf "copying outer wrapper script over to app...\n"
 dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
+printf "setting vars in outer wrapper script...\n"
+sedvar "${ABS_OUTER_WRAP}" TERM_NAME JUPYTER_BIN JUPYTER_CMD ABS_INNER_WRAP
+printf "done\n\n"
+
 
 # copy over the inner wrapper script, which automatically passes certain arguments to the chrome bin
+printf "copying inner wrapper script over to app...\n"
 dryecho cp "${ABS_INNER_WRAP_SRC}" "${ABS_INNER_WRAP}"
-
-# copy over a script containing variables the other scripts depend upon
-#dryecho cp "${globals_src}" "${ABS_APP_PATH}"/Contents/MacOS"
-
+printf "setting vars in inner wrapper script...\n"
+sedvar "${ABS_INNER_WRAP}" ABS_APP_SUPPORT ABS_APP_BIN
 printf "done\n\n"
+
 
 # modify the app's plist's exe to point to the script we just copied over
 printf "Modifying app's Info.plist to point to executable scripts...\n"
 dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"
 
+
 # modify the app's plist's bundle name
-printf "Modifying budle name in app's Info.plist...\n"
+printf "Modifying bundle name in app's Info.plist...\n"
 dryecho plutil -replace CFBundleName -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"
 
+
+# optionally install any extension manifests to the new Chrome instance's 'Application Support' dir
 if [ "$EXTENSIONS" = true ]; then
-    printf "Adding extension manifests to ${ABS_EXTENSION_JSON}...\n"
+    printf "Adding extension manifests to \"${ABS_EXTENSION_JSON}\"...\n"
     # create the External Extensions dir if it doesn't exist
     dryecho mkdir -p "${ABS_EXTENSION_JSON}"
     for extjson in "${ABS_EXTENSION_JSON_SRC}"; do
