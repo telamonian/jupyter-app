@@ -7,6 +7,11 @@ ABS_ROOT=$(cd "$(dirname "$(stat -f "${BASH_SOURCE}")")"/.. && pwd -P)
 # as soon as possible, source the user defined options/vars
 source "${ABS_ROOT}"/install.conf
 
+# some stuff for the .plist
+BUNDLE_ID="com.telamonian.${APP_NAME}"
+PRODUCT_ID=${BUNDLE_ID}
+BRAND_ID="TEL"
+
 
 ## names and relative paths
 # relative paths (with respect to ABS_ROOT) of important directories
@@ -30,8 +35,10 @@ INNER_WRAP="${APP_NAME}_inner_wrap"
 # absolute app installation path
 ABS_APP_PATH="${APP_DIR}"/"${APP_NAME}.app"
 
-# the application support dir
+# the application support dir, caches dir, and path to the app preferences
 ABS_APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
+ABS_CACHE_PATH="${HOME}/Caches/${APP_NAME}"
+ABS_PREFERENCES_PATH="${HOME}/Library/Preferences/${BUNDLE_ID}.plist"
 
 # absolute paths to various dirs within the .app bundle
 ABS_CONTENTS="${ABS_APP_PATH}"/Contents

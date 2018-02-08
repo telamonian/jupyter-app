@@ -124,7 +124,7 @@ printf "done\n\n"
 printf "copying outer wrapper script over to app...\n"
 dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
 printf "setting vars in outer wrapper script...\n"
-sedvar "${ABS_OUTER_WRAP}" TERM_NAME JUPYTER_BIN JUPYTER_CMD ABS_INNER_WRAP
+sedvar "${ABS_OUTER_WRAP}" TERM_NAME JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP
 printf "done\n\n"
 
 
@@ -143,8 +143,12 @@ printf "done\n\n"
 
 
 # modify the app's plist's bundle name
-printf "Modifying bundle name in app's Info.plist...\n"
-dryecho plutil -replace CFBundleName -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
+printf "Modifying app's Info.plist...\n"
+dryecho plutil -replace CFBundleDisplayName -string "${APP_NAME}"  "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace CFBundleIdentifier  -string "${BUNDLE_ID}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace CFBundleName        -string "${APP_NAME}"  "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace KSBrandID           -string "${BRAND_ID}"  "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace KSProductID         -string "${BUNDLE_ID}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
 printf "done\n\n"
 
 
