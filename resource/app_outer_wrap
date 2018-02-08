@@ -7,8 +7,8 @@ term_name="${TERM_NAME}"
 jupyter_bin="${JUPYTER_BIN}"
 jupyter_cmd="${JUPYTER_CMD}"
 inner_wrap="${ABS_INNER_WRAP}"
-browser_cmd="${BROWSER_CMD}"
 notebook_dir="${JUPYTER_NOTEBOOK_DIR}"
+browser_cmd="${BROWSER_CMD}"
 
 # start up iTerm2, or switch to it if its already running
 osascript -e "activate application \"${term_name}\""

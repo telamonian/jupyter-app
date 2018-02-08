@@ -124,7 +124,7 @@ printf "done\n\n"
 printf "copying outer wrapper script over to app...\n"
 dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
 printf "setting vars in outer wrapper script...\n"
-sedvar "${ABS_OUTER_WRAP}" TERM_NAME JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP
+sedvar "${ABS_OUTER_WRAP}" TERM_NAME JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP BROWSER_CMD
 printf "done\n\n"
 
 
