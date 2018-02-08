@@ -68,3 +68,11 @@ if [ "$EXTENSIONS" = true ]; then
     ABS_EXTENSION_JSON_SRC=$(find "${ABS_ROOT}"/"${EXTENSION_JSON}" -name "*.json")
     ABS_EXTENSION_JSON="${ABS_APP_SUPPORT}/External Extensions"
 fi
+
+
+## the command that jupyter should issue to the browser upon launching
+if [ "$HIDE_URL_BAR" = true ]; then
+    BROWSER_CMD="--app=%s"
+else
+    BROWSER_CMD="--new-window %s"
+fi

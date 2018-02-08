@@ -63,12 +63,12 @@ printf "removing the user-data-dir...\n"
 dryecho rm -rf "${app_support_path}"
 printf "done\n\n"
 
-# remove the user-data-dir
+# remove the app's cache
 printf "removing the cache...\n"
 dryecho rm -rf "${cache_path}"
 printf "done\n\n"
 
-# remove the user-data-dir
+# remove the app's preferences dir
 printf "removing the preferences...\n"
 dryecho rm -rf "${preferences_path}"
 printf "done\n\n"
