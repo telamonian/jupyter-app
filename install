@@ -60,6 +60,15 @@ sedvar() {
     done
 }
 
+# replace the value for a key in a .strings file
+sedStringsFile() {
+    key=$1
+    val=$2
+    path=$3
+
+    sed -i '' "s/$key.*/$key = \"$val\";/g" $path
+}
+
 # get some user-defined and project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
 globals_src="${reldir}"/resource/globals
@@ -138,17 +147,24 @@ printf "done\n\n"
 
 # modify the app's plist's exe to point to the script we just copied over
 printf "Modifying app's Info.plist to point to executable scripts...\n"
-dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "${ABS_CONTENTS}/Info.plist"
 printf "done\n\n"
 
 
 # modify the app's plist's bundle name
 printf "Modifying app's Info.plist...\n"
-dryecho plutil -replace CFBundleDisplayName -string "${APP_NAME}"  "/Applications/${APP_NAME}.app/Contents/Info.plist"
-dryecho plutil -replace CFBundleIdentifier  -string "${BUNDLE_ID}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
-dryecho plutil -replace CFBundleName        -string "${APP_NAME}"  "/Applications/${APP_NAME}.app/Contents/Info.plist"
-dryecho plutil -replace KSBrandID           -string "${BRAND_ID}"  "/Applications/${APP_NAME}.app/Contents/Info.plist"
-dryecho plutil -replace KSProductID         -string "${BUNDLE_ID}" "/Applications/${APP_NAME}.app/Contents/Info.plist"
+dryecho plutil -replace CFBundleDisplayName -string "${APP_NAME}"  "${ABS_CONTENTS}/Info.plist"
+dryecho plutil -replace CFBundleIdentifier  -string "${BUNDLE_ID}" "${ABS_CONTENTS}/Info.plist"
+dryecho plutil -replace CFBundleName        -string "${APP_NAME}"  "${ABS_CONTENTS}/Info.plist"
+dryecho plutil -replace KSBrandID           -string "${BRAND_ID}"  "${ABS_CONTENTS}/Info.plist"
+dryecho plutil -replace KSProductID         -string "${BUNDLE_ID}" "${ABS_CONTENTS}/Info.plist"
+printf "done\n\n"
+
+# modify the localization strings. Fixes visible name in finder
+printf "Modifying app's localized .strings resources...\n"
+dryecho find "${ABS_RESOURCES}" -name "InfoPlist.strings" -exec sedStringsFile CFBundleDisplayName "${APP_NAME}" {} +
+dryecho find "${ABS_RESOURCES}" -name "InfoPlist.strings" -exec sedStringsFile CFBundleName "${APP_NAME}" {} +
+#dryecho find "${ABS_RESOURCES}" -name "InfoPlist.strings" -exec sed -i '' "s/CFBundleDisplayName.*/CFBundleDisplayName = \"${APP_NAME}\";/g" {} +
 printf "done\n\n"
 
 
