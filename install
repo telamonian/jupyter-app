@@ -19,7 +19,7 @@ EOF
 dryrun=false
 
 # for internal dev purposes.
-testmode=false
+devmode=false
 
 OPTIND=1
 # Resetting OPTIND is necessary if getopts was used previously in the script.
@@ -33,7 +33,7 @@ while getopts hdtr opt; do
             ;;
         d)  dryrun=true
             ;;
-        t)  testmode=true
+        t)  devmode=true
             ;;
         *)
             show_help >&2
@@ -81,18 +81,19 @@ dryecho mkdir -p "${temp}/mount"
 
 
 # decide where to save the chrome .dmg
-if [ "$testmode" = true ]; then
-    dmgloc='./chrome.dmg'
+if [ "$devmode" = true ]; then
+    dmgloc="./${BROWSER_NAME}.dmg"
 else
-    dmgloc="${temp}/1.dmg"
+    dmgloc="${temp}/${BROWSER_NAME}.dmg"
 fi
 
 
 # download the app
-if ! [ "$testmode" = true -a -f ${dmgloc} ]; then
-    printf "downloading vanilla google chrome...\n"
-    dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o ${dmgloc}
-    printf "done\n\n"
+if ! [ "$devmode" = true -a -f ${dmgloc} ]; then
+    "${reldir}"/script/download/${BROWSER_NAME} $dmgloc
+#    printf "downloading vanilla google chrome...\n"
+#    dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o ${dmgloc}
+#    printf "done\n\n"
 fi
 
 
