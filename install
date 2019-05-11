@@ -8,18 +8,18 @@ set -e
 show_help() {
 cat << EOF
 Usage: ${0##*/} [-cd]
-Set up links between your {HOME} dir and the dotfiles in {DOT_HOME}
+Install the Jupyter.app
 
     -h    Display this help and exit.
     -d    Dry run. For debug purposes, echo commands instead of running them.
 EOF
 }
 
-# if true, perform a dryrun
-dryrun=false
+# if set to -d, perform a dryrun
+dryrun=
 
 # for internal dev purposes.
-devmode=false
+devmode=
 
 OPTIND=1
 # Resetting OPTIND is necessary if getopts was used previously in the script.
@@ -31,9 +31,9 @@ while getopts hdtr opt; do
             show_help
             exit 0
             ;;
-        d)  dryrun=true
+        d)  dryrun=-d
             ;;
-        t)  devmode=true
+        t)  devmode=-t
             ;;
         *)
             show_help >&2
@@ -45,9 +45,17 @@ shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 # define the dryrun echo command as appropriate
 alias dryecho=
-if [ "$dryrun" = true ]; then
+if [ "$dryrun" = "-d" ]; then
     alias dryecho='echo'
 fi
+
+# read a single string val from a .plist file
+plget() {
+    key=$1
+    pth=$2
+
+    dryecho plutil -extract $1 xml1 -o - $pth | grep "<string>.*</string>" | sed -e "s/<string>\(.*\)<\/string>/\1/g"
+}
 
 # helper function(s)
 sedvar() {
@@ -64,9 +72,11 @@ sedvar() {
 sedStringsFile() {
     key=$1
     val=$2
-    path=$3
+    shift 2
 
-    sed -i '' "s/$key.*/$key = \"$val\";/g" $path
+    for pth in $@; do
+        dryecho sed -i '' "s/${key}.*/${key} = \"${val}\";/g" ${pth}
+    done
 }
 
 # get some user-defined and project-wide vars
@@ -81,51 +91,50 @@ dryecho mkdir -p "${temp}/mount"
 
 
 # decide where to save the chrome .dmg
-if [ "$devmode" = true ]; then
-    dmgloc="./${BROWSER_NAME}.dmg"
+if [ "$devmode" = "-t" ]; then
+    dmgloc="./${APP_BASE}.dmg"
 else
-    dmgloc="${temp}/${BROWSER_NAME}.dmg"
+    dmgloc="${temp}/${APP_BASE}.dmg"
 fi
 
 
 # download the app
-if ! [ "$devmode" = true -a -f ${dmgloc} ]; then
-    "${reldir}"/script/download/${BROWSER_NAME} $dmgloc
-#    printf "downloading vanilla google chrome...\n"
-#    dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o ${dmgloc}
-#    printf "done\n\n"
+if ! [ "$devmode" = "-t" -a -f ${dmgloc} ]; then
+    "${reldir}"/script/download/${APP_BASE}.sh $dmgloc $dryrun
 fi
 
 
-# install the app
-printf "installing vanilla google chrome...\n"
-if [ "$dryrun" = true ]; then
+# install the app. Use cp -R to preserve symlinks
+printf "installing base browser app...\n"
+if [ "$dryrun" = "-d" ]; then
     # special dryrun handling is required here due to all of the > and | characters
     dryecho yes \| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${dmgloc} \> /dev/null 2\>\&1
-    dryecho cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
+    dryecho rm -rf "${ABS_APP_PATH}"
+    dryecho cp -R "$temp"/mount/*.app "${ABS_APP_PATH}"
     dryecho hdiutil detach "${temp}/mount" \> /dev/null 2\>\&1
 else
     yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${dmgloc} > /dev/null 2>&1
-    cp -r "$temp"/mount/*.app "${ABS_APP_PATH}"
+    rm -rf "${ABS_APP_PATH}"
+    cp -R "$temp"/mount/*.app "${ABS_APP_PATH}"
     hdiutil detach "${temp}/mount" > /dev/null 2>&1
 fi
 printf "done\n\n"
 
 
 # clean up the temp dir
-printf "cleaning up google chrome install files...\n"
+printf "cleaning up base browser install files...\n"
 dryecho rm -r "${temp}"
 printf "done\n\n"
 
 
 # change the icon
-printf "changing app icon from chrome to jupyter...\n"
+printf "changing app icon to jupyter...\n"
 dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
 printf "done\n\n"
 
 
-# rename the chrome exe
-printf "renaming chrome executable...\n"
+# rename the actual exe
+printf "renaming app executable...\n"
 dryecho mv "${ABS_APP_BIN_SRC}" "${ABS_APP_BIN}"
 printf "done\n\n"
 
@@ -163,8 +172,9 @@ printf "done\n\n"
 
 # modify the localization strings. Fixes visible name in finder
 printf "Modifying app's localized .strings resources...\n"
-dryecho find "${ABS_RESOURCES}" -name "InfoPlist.strings" -exec sedStringsFile CFBundleDisplayName "${APP_NAME}" {} +
-dryecho find "${ABS_RESOURCES}" -name "InfoPlist.strings" -exec sedStringsFile CFBundleName "${APP_NAME}" {} +
+dryecho INFO_PLIST_STRINGS=$(find "${ABS_RESOURCES}" -name "InfoPlist.strings")
+dryecho sedStringsFile CFBundleDisplayName "${APP_NAME}" ${INFO_PLIST_STRINGS}
+dryecho sedStringsFile CFBundleName "${APP_NAME}" ${INFO_PLIST_STRINGS}
 #dryecho find "${ABS_RESOURCES}" -name "InfoPlist.strings" -exec sed -i '' "s/CFBundleDisplayName.*/CFBundleDisplayName = \"${APP_NAME}\";/g" {} +
 printf "done\n\n"
 

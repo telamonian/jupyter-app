@@ -8,7 +8,7 @@ set -e
 show_help() {
 cat << EOF
 Usage: ${0##*/} [-cd]
-Set up links between your {HOME} dir and the dotfiles in {DOT_HOME}
+Remove all traces of Jupyter.app
 
     -h    Display this help and exit.
     -d    Dry run. For debug purposes, echo commands instead of running them.

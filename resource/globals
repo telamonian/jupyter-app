@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
+set -e
+
 ## init
 # project/repo root
 ABS_ROOT=$(cd "$(dirname "$(stat -f "${BASH_SOURCE}")")"/.. && pwd -P)
 
 # as soon as possible, source the user defined options/vars
 source "${ABS_ROOT}"/install.conf
+
+# as of OSX Mojave, jupyter-app only works with iTerm
+TERM_NAME=iTerm
 
 # some stuff for the .plist
 BUNDLE_ID="com.telamonian.${APP_NAME}"
@@ -21,7 +26,14 @@ SCRIPT="script"
 
 # names of important files
 ICNS=app.icns
-APP_BIN_GOOGLE="Google Chrome"
+if [ "${APP_BASE}" = "chrome" ]; then
+    APP_BASE_BIN="Google Chrome"
+elif [ "${APP_BASE}" = "chromium" ]; then
+    APP_BASE_BIN="Chromium"
+else
+    echo "APP_BASE is ${APP_BASE}, must be one of: chrome | chromium" 1>&2
+    exit 1
+fi
 APP_BIN="${APP_NAME}_bin"
 
 # src and dst names for the wrapper scripts are different
@@ -33,7 +45,7 @@ INNER_WRAP="${APP_NAME}_inner_wrap"
 
 ## absolute paths
 # absolute app installation path
-ABS_APP_PATH="${APP_DIR}"/"${APP_NAME}.app"
+ABS_APP_PATH="${APP_DIR}/${APP_NAME}.app"
 
 # the application support dir, caches dir, and path to the app preferences
 ABS_APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
@@ -46,26 +58,26 @@ ABS_RESOURCES="${ABS_CONTENTS}"/Resources
 ABS_MACOS="${ABS_CONTENTS}"/MacOS
 
 # absolute src and dst paths for the custom app icons file
-ABS_ICONS_SRC="${ABS_ROOT}"/"${RESOURCE}"/"${ICNS}"
+ABS_ICONS_SRC="${ABS_ROOT}/${RESOURCE}/${ICNS}"
 ABS_ICONS="${ABS_RESOURCES}"
 
 # absolute src and dst paths for renaming the original exe
-ABS_APP_BIN_SRC="${ABS_MACOS}"/"${APP_BIN_GOOGLE}"
-ABS_APP_BIN="${ABS_MACOS}"/"${APP_BIN}"
+ABS_APP_BIN_SRC="${ABS_MACOS}/${APP_BASE_BIN}"
+ABS_APP_BIN="${ABS_MACOS}/${APP_BIN}"
 
 # absolute src and dst paths for the outer wrapper, the script that replaces the original exe
-ABS_OUTER_WRAP_SRC="${ABS_ROOT}"/"${RESOURCE}"/"${OUTER_WRAP_SRC}"
-ABS_OUTER_WRAP="${ABS_MACOS}"/"${OUTER_WRAP}"
+ABS_OUTER_WRAP_SRC="${ABS_ROOT}/${RESOURCE}/${OUTER_WRAP_SRC}"
+ABS_OUTER_WRAP="${ABS_MACOS}/${OUTER_WRAP}"
 
 # absolute src and dst paths for the inner wrapper, which gets call by the outer wrapper and in turn calls the original exe
-ABS_INNER_WRAP_SRC="${ABS_ROOT}"/"${RESOURCE}"/"${INNER_WRAP_SRC}"
-ABS_INNER_WRAP="${ABS_MACOS}"/"${INNER_WRAP}"
+ABS_INNER_WRAP_SRC="${ABS_ROOT}/${RESOURCE}/${INNER_WRAP_SRC}"
+ABS_INNER_WRAP="${ABS_MACOS}/${INNER_WRAP}"
 
 
 ## paths related to automatic installation of chrome themes/extensions. Only bother with these if the EXTENSIONS option is selected.
 if [ "$EXTENSIONS" = true ]; then
     # absolute src and dst paths for the extension .json files that we've packaged
-    ABS_EXTENSION_JSON_SRC=$(find "${ABS_ROOT}"/"${EXTENSION_JSON}" -name "*.json")
+    ABS_EXTENSION_JSON_SRC=$(find "${ABS_ROOT}/${EXTENSION_JSON}" -name "*.json")
     ABS_EXTENSION_JSON="${ABS_APP_SUPPORT}/External Extensions"
 fi
 
