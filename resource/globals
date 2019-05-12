@@ -9,9 +9,6 @@ ABS_ROOT=$(cd "$(dirname "$(stat -f "${BASH_SOURCE}")")"/.. && pwd -P)
 # as soon as possible, source the user defined options/vars
 source "${ABS_ROOT}"/install.conf
 
-# as of OSX Mojave, jupyter-app only works with iTerm
-TERM_NAME=iTerm
-
 # some stuff for the .plist
 BUNDLE_ID="com.telamonian.${APP_NAME}"
 PRODUCT_ID=${BUNDLE_ID}

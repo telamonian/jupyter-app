@@ -12,11 +12,14 @@ Remove all traces of Jupyter.app
 
     -h    Display this help and exit.
     -d    Dry run. For debug purposes, echo commands instead of running them.
+    -i    Always ask for confirmation before deleting existing files
 EOF
 }
 
 # Initialize our own variables:
-dryrun=false
+dryrun=
+
+confirm=
 
 OPTIND=1
 # Resetting OPTIND is necessary if getopts was used previously in the script.
@@ -28,7 +31,9 @@ while getopts hdr opt; do
             show_help
             exit 0
             ;;
-        d)  dryrun=true
+        d)  dryrun=-d
+            ;;
+        i)  confirm=-i
             ;;
         *)
             show_help >&2
@@ -40,7 +45,7 @@ shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 # define the dryrun echo command as appropriate
 alias dryecho=
-if [ "$dryrun" = true ]; then
+if [ "$dryrun" = "-d" ]; then
     alias dryecho='echo'
 fi
 
@@ -55,20 +60,20 @@ preferences_path="${ABS_PREFERENCES_PATH}"
 
 # remove the app
 printf "removing the app...\n"
-dryecho rm -rf "${app_path}"
+dryecho rm $confirm -rf "${app_path}"
 printf "done\n\n"
 
 # remove the user-data-dir
 printf "removing the user-data-dir...\n"
-dryecho rm -rf "${app_support_path}"
+dryecho rm $confirm -rf "${app_support_path}"
 printf "done\n\n"
 
 # remove the app's cache
 printf "removing the cache...\n"
-dryecho rm -rf "${cache_path}"
+dryecho rm $confirm -rf "${cache_path}"
 printf "done\n\n"
 
 # remove the app's preferences dir
 printf "removing the preferences...\n"
-dryecho rm -rf "${preferences_path}"
+dryecho rm $confirm -rf "${preferences_path}"
 printf "done\n\n"

@@ -6,7 +6,4 @@
 term_name="${TERM_NAME}"
 mid_wrap="${ABS_MID_WRAP}"
 
-#${inner_wrap} --no-startup-window &
-#BROWSER_PID=$!
 open -a "${term_name}" "${mid_wrap}"
-#JUP_PID=$!

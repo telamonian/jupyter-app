@@ -26,8 +26,3 @@ pkill -P $PARENT_PID
 
 # kill the jupyter server itself
 kill $PARENT_PID
-
-
-#echo browser script parent pid: $PARENT_PID
-#echo browser script pid: $$
-#echo browser pid: $PID

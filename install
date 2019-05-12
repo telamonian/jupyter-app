@@ -84,6 +84,8 @@ reldir=$(dirname "$(stat -f "$0")")
 globals_src="${reldir}"/resource/globals
 source ${globals_src}
 
+# clean up any existing files
+${reldir}/uninstall dryrun -i
 
 # make a temporary dir
 temp=$TMPDIR$(uuidgen)
