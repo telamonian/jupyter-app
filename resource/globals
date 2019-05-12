@@ -39,6 +39,8 @@ APP_BIN="${APP_NAME}_bin"
 # src and dst names for the wrapper scripts are different
 OUTER_WRAP_SRC="app_outer_wrap"
 OUTER_WRAP="${APP_NAME}"
+MID_WRAP_SRC="app_mid_wrap"
+MID_WRAP="${APP_NAME}_mid_wrap"
 INNER_WRAP_SRC="app_inner_wrap"
 INNER_WRAP="${APP_NAME}_inner_wrap"
 
@@ -68,6 +70,10 @@ ABS_APP_BIN="${ABS_MACOS}/${APP_BIN}"
 # absolute src and dst paths for the outer wrapper, the script that replaces the original exe
 ABS_OUTER_WRAP_SRC="${ABS_ROOT}/${RESOURCE}/${OUTER_WRAP_SRC}"
 ABS_OUTER_WRAP="${ABS_MACOS}/${OUTER_WRAP}"
+
+# absolute src and dst paths for the mid wrapper, which gets call by the outer wrapper and in turn calls the original exe
+ABS_MID_WRAP_SRC="${ABS_ROOT}/${RESOURCE}/${MID_WRAP_SRC}"
+ABS_MID_WRAP="${ABS_MACOS}/${MID_WRAP}"
 
 # absolute src and dst paths for the inner wrapper, which gets call by the outer wrapper and in turn calls the original exe
 ABS_INNER_WRAP_SRC="${ABS_ROOT}/${RESOURCE}/${INNER_WRAP_SRC}"

@@ -4,23 +4,9 @@
 # Its job is to set up a new terminal window, then to run the inner wrapper inside that terminal.
 
 term_name="${TERM_NAME}"
-jupyter_bin="${JUPYTER_BIN}"
-jupyter_cmd="${JUPYTER_CMD}"
-inner_wrap="${ABS_INNER_WRAP}"
-notebook_dir="${JUPYTER_NOTEBOOK_DIR}"
-browser_cmd="${BROWSER_CMD}"
+mid_wrap="${ABS_MID_WRAP}"
 
-osascript <<EOD
-# start up iTerm2, or switch to it if its already running
-activate application "${term_name}"
-
-tell application "${term_name}"
-    # create a new terminal window. Focus switches to the new window automatically
-    create window with default profile
-    tell current session of current window
-        # run a new instance of jupyter notebook and a separate browser to go with it
-        # NB: the trick to get this to work is the %s symbol in the --browser argument, which tells the webbrowser pacakge (which notebook depends on) where to insert a url to be opened in the browser command
-        write text "${jupyter_bin} ${jupyter_cmd} --notebook-dir=${notebook_dir} --browser=\"${inner_wrap} ${browser_cmd}\""
-    end tell
-end tell
-EOD
+#${inner_wrap} --no-startup-window &
+#BROWSER_PID=$!
+open -a "${term_name}" "${mid_wrap}"
+#JUP_PID=$!

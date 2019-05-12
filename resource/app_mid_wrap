@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# This outer wrapper gets installed to the path where the original exe was.
+# Its job is to set up a new terminal window, then to run the inner wrapper inside that terminal.
+
+jupyter_bin="${JUPYTER_BIN}"
+jupyter_cmd="${JUPYTER_CMD}"
+inner_wrap="${ABS_INNER_WRAP}"
+notebook_dir="${JUPYTER_NOTEBOOK_DIR}"
+browser_cmd="${BROWSER_CMD}"
+
+#${inner_wrap} --no-startup-window &
+#BROWSER_PID=$!
+${jupyter_bin} ${jupyter_cmd} --notebook-dir=${notebook_dir} --browser="${inner_wrap} ${browser_cmd}"
+#JUP_PID=$!
+
+#sleep 2
+#echo $$
+#pgrep -P $$
+
+#waitkill() {
+#    for var in $@; do
+#        if ps -p $var > /dev/null; then
+#            for var in $@; do
+#                echo $var
+#                kill $var
+#            done
+#            return
+#        fi
+#    done
+#    sleep 1
+#}
+
+#waitkill $BROWSER_PID
+
+#fg $JUP_PID
+
+#bash
+
+#wait $PID;
+#while ps -p 99999 > /dev/null ; do sleep 1; done
+
+#pkill -P $$
