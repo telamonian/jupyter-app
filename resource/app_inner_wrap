@@ -3,7 +3,7 @@
 # This inner wrapper is installed alongside the outer wrapper.
 # Its job is to handle launching the actual browser exe.
 
-app_support="${ABS_APP_SUPPORT}"
+app_support="${ABS_APP_SUPPORT_PATH}"
 app_bin="${ABS_APP_BIN}"
 
 # get the pid of the jupyter server that launches this script

@@ -47,8 +47,8 @@ INNER_WRAP="${APP_NAME}_inner_wrap"
 ABS_APP_PATH="${APP_DIR}/${APP_NAME}.app"
 
 # the application support dir, caches dir, and path to the app preferences
-ABS_APP_SUPPORT="${HOME}/Library/Application Support/${APP_NAME}"
-ABS_CACHE_PATH="${HOME}/Caches/${APP_NAME}"
+ABS_APP_SUPPORT_PATH="${HOME}/Library/Application Support/${APP_NAME}"
+ABS_CACHE_PATH="${HOME}/Library/Caches/${APP_NAME}"
 ABS_PREFERENCES_PATH="${HOME}/Library/Preferences/${BUNDLE_ID}.plist"
 
 # absolute paths to various dirs within the .app bundle
@@ -81,7 +81,7 @@ ABS_INNER_WRAP="${ABS_MACOS}/${INNER_WRAP}"
 if [ "$EXTENSIONS" = true ]; then
     # absolute src and dst paths for the extension .json files that we've packaged
     ABS_EXTENSION_JSON_SRC=$(find "${ABS_ROOT}/${EXTENSION_JSON}" -name "*.json")
-    ABS_EXTENSION_JSON="${ABS_APP_SUPPORT}/External Extensions"
+    ABS_EXTENSION_JSON="${ABS_APP_SUPPORT_PATH}/External Extensions"
 fi
 
 

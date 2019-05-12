@@ -27,16 +27,14 @@ OPTIND=1
 
 while getopts hdtr opt; do
     case $opt in
-        h)
-            show_help
+        h)  show_help
             exit 0
             ;;
         d)  dryrun=-d
             ;;
         t)  devmode=-t
             ;;
-        *)
-            show_help >&2
+        *)  show_help >&2
             exit 1
             ;;
     esac
@@ -85,7 +83,7 @@ globals_src="${reldir}"/resource/globals
 source ${globals_src}
 
 # clean up any existing files
-${reldir}/uninstall dryrun -i
+${reldir}/uninstall $dryrun -i
 
 # make a temporary dir
 temp=$TMPDIR$(uuidgen)
@@ -145,15 +143,21 @@ printf "done\n\n"
 printf "copying outer wrapper script over to app...\n"
 dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
 printf "setting vars in outer wrapper script...\n"
-sedvar "${ABS_OUTER_WRAP}" TERM_NAME JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP BROWSER_CMD
+sedvar "${ABS_OUTER_WRAP}" TERM_NAME ABS_MID_WRAP
 printf "done\n\n"
 
+# copy over the mid wrapper script, which launches the jupyter server
+printf "copying mid wrapper script over to app...\n"
+dryecho cp "${ABS_MID_WRAP_SRC}" "${ABS_MID_WRAP}"
+printf "setting vars in mid wrapper script...\n"
+sedvar "${ABS_MID_WRAP}" JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP BROWSER_CMD
+printf "done\n\n"
 
 # copy over the inner wrapper script, which automatically passes certain arguments to the chrome bin
 printf "copying inner wrapper script over to app...\n"
 dryecho cp "${ABS_INNER_WRAP_SRC}" "${ABS_INNER_WRAP}"
 printf "setting vars in inner wrapper script...\n"
-sedvar "${ABS_INNER_WRAP}" ABS_APP_SUPPORT ABS_APP_BIN
+sedvar "${ABS_INNER_WRAP}" ABS_APP_SUPPORT_PATH ABS_APP_BIN
 printf "done\n\n"
 
 

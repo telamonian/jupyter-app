@@ -25,18 +25,16 @@ OPTIND=1
 # Resetting OPTIND is necessary if getopts was used previously in the script.
 # It is a good idea to make OPTIND local if you process options in a function.
 
-while getopts hdr opt; do
+while getopts hdir opt; do
     case $opt in
-        h)
-            show_help
+        h)  show_help
             exit 0
             ;;
         d)  dryrun=-d
             ;;
         i)  confirm=-i
             ;;
-        *)
-            show_help >&2
+        *)  show_help >&2
             exit 1
             ;;
     esac
@@ -49,31 +47,40 @@ if [ "$dryrun" = "-d" ]; then
     alias dryecho='echo'
 fi
 
+cleanup() {
+    pth=$1
+    msg=$2
+
+    if [ -e "$pth" -o "$dryrun" = "-d" ]; then
+        printf "${msg}"
+
+        if [ "$confirm" = "-i" -a "$dryrun" != "-d" ]; then
+            read -p "remove ${pth}? [y/n]: " -r INPUT
+            if [ "${INPUT:0:1}" = y -o "${INPUT:0:1}" = Y ]; then
+                rm -rf "${pth}"
+                printf "removed ${pth}\n\n"
+            else
+                printf "skipping\n\n"
+            fi
+        else
+            dryecho rm -rf "${pth}"
+            printf "removed ${pth}\n\n"
+        fi
+    fi
+}
+
 # get some user-defined and project-wide vars
 reldir=$(dirname "$(stat -f "$0")")
 source "${reldir}"/resource/globals
 
-app_path="${ABS_APP_PATH}"
-app_support_path="${ABS_APP_SUPPORT_PATH}"
-cache_path="${ABS_CACHE_PATH}"
-preferences_path="${ABS_PREFERENCES_PATH}"
-
 # remove the app
-printf "removing the app...\n"
-dryecho rm $confirm -rf "${app_path}"
-printf "done\n\n"
+cleanup "${ABS_APP_PATH}" "cleaning up existing app...\n"
 
 # remove the user-data-dir
-printf "removing the user-data-dir...\n"
-dryecho rm $confirm -rf "${app_support_path}"
-printf "done\n\n"
+cleanup "${ABS_APP_SUPPORT_PATH}" "cleaning up existing user-data-dir...\n"
 
 # remove the app's cache
-printf "removing the cache...\n"
-dryecho rm $confirm -rf "${cache_path}"
-printf "done\n\n"
+cleanup "${ABS_CACHE_PATH}" "cleaning up existing cache...\n"
 
 # remove the app's preferences dir
-printf "removing the preferences...\n"
-dryecho rm $confirm -rf "${preferences_path}"
-printf "done\n\n"
+cleanup "${ABS_PREFERENCES_PATH}" "cleaning up existing preferences file...\n"
