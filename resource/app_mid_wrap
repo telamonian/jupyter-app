@@ -10,5 +10,9 @@ inner_wrap="${ABS_INNER_WRAP}"
 notebook_dir="${JUPYTER_NOTEBOOK_DIR}"
 browser_cmd="${BROWSER_CMD}"
 
-source ${virtual_env}
+# source the virtual env activate script, if specified
+if [ -n "$virtual_env" ]; then
+    source ${virtual_env}
+fi
+
 ${jupyter_bin} ${jupyter_cmd} --notebook-dir=${notebook_dir} --browser="${inner_wrap} ${browser_cmd}"
