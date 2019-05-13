@@ -3,10 +3,12 @@
 # This outer wrapper gets installed to the path where the original exe was.
 # Its job is to set up a new terminal window, then to run the inner wrapper inside that terminal.
 
+virtual_env="${VIRTUAL_ENV}"
 jupyter_bin="${JUPYTER_BIN}"
 jupyter_cmd="${JUPYTER_CMD}"
 inner_wrap="${ABS_INNER_WRAP}"
 notebook_dir="${JUPYTER_NOTEBOOK_DIR}"
 browser_cmd="${BROWSER_CMD}"
 
+source ${virtual_env}
 ${jupyter_bin} ${jupyter_cmd} --notebook-dir=${notebook_dir} --browser="${inner_wrap} ${browser_cmd}"
