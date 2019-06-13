@@ -24,5 +24,6 @@ wait $PID
 # kill any children of the jupyter server
 pkill -P $PARENT_PID
 
-# kill the jupyter server itself
-kill $PARENT_PID
+# kill the jupyter server itself. Like hiting ctrl-c twice
+kill -s SIGINT $PARENT_PID
+kill -s SIGINT $PARENT_PID
