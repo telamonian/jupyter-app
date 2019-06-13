@@ -6,4 +6,9 @@
 term_name="${TERM_NAME}"
 mid_wrap="${ABS_MID_WRAP}"
 
+if [ $# -gt 0  ]; then
+    # any cmd line args will get passed along to the JUPYTER_CMD in the mid wrap
+    export JUPYTERAPP_JUPYTER_CMD="$@"
+fi
+
 open -a "${term_name}" "${mid_wrap}"

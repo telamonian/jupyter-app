@@ -15,4 +15,9 @@ if [ -n "$virtual_env" ]; then
     source ${virtual_env}
 fi
 
+# get jupyter_cmd from env var, if defined
+if [ -n "${JUPYTERAPP_JUPYTER_CMD}" ]; then
+    jupyter_cmd="${JUPYTERAPP_JUPYTER_CMD}"
+fi
+
 ${jupyter_bin} ${jupyter_cmd} --notebook-dir=${notebook_dir} --browser="${inner_wrap} ${browser_cmd}"
