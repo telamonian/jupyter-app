@@ -7,8 +7,16 @@ term_name="${TERM_NAME}"
 mid_wrap="${ABS_MID_WRAP}"
 
 if [ $# -gt 0  ]; then
-    # any cmd line args will get passed along to the JUPYTER_CMD in the mid wrap
-    export JUPYTERAPP_JUPYTER_CMD="$@"
+    # any cmd line args will get passed along to the JUPYTER_CMD in the mid wrap.
+    # In order to pass along the var, copy mid_wrap to a tmp file and then prepend the var
+    _old_mid_wrap="${mid_wrap}"
+    mid_wrap="$(mktemp)"
+
+    echo "#!/usr/bin/env bash" > $mid_wrap
+    echo "JUPYTERAPP_JUPYTER_CMD=\"$@\"" >> $mid_wrap
+    cat $_old_mid_wrap >> $mid_wrap
+
+    chmod u+x $mid_wrap
 fi
 
 open -a "${term_name}" "${mid_wrap}"

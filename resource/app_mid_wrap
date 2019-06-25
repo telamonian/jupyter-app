@@ -10,14 +10,15 @@ inner_wrap="${ABS_INNER_WRAP}"
 notebook_dir="${JUPYTER_NOTEBOOK_DIR}"
 browser_cmd="${BROWSER_CMD}"
 
-# source the virtual env activate script, if specified
-if [ -n "$virtual_env" ]; then
-    source ${virtual_env}
-fi
-
 # get jupyter_cmd from env var, if defined
 if [ -n "${JUPYTERAPP_JUPYTER_CMD}" ]; then
     jupyter_cmd="${JUPYTERAPP_JUPYTER_CMD}"
 fi
 
+# source the virtual env activate script, if specified
+if [ -n "$virtual_env" ]; then
+    source ${virtual_env}
+fi
+
+# --browser gets passed along to the `webbrowser` module. See jupyter/notebook/notebook/notebookapp.py:1732
 ${jupyter_bin} ${jupyter_cmd} --notebook-dir=${notebook_dir} --browser="${inner_wrap} ${browser_cmd}"
