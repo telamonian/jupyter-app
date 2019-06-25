@@ -89,17 +89,26 @@ temp=$TMPDIR$(uuidgen)
 dryecho mkdir -p "${temp}/mount"
 
 
-# decide where to save the chrome .dmg
-if [ "$devmode" = "-t" ]; then
-    dmgloc="./${APP_BASE}.dmg"
+# figure out what the download's extension will be
+if [ "${APP_BASE}" = "chromium" ]; then
+    downloadExt=".zip"
 else
-    dmgloc="${temp}/${APP_BASE}.dmg"
+    downloadExt=".dmg"
 fi
 
 
+# decide where to save the chrome app download
+if [ "$devmode" = "-t" ]; then
+    downloadName="./${APP_BASE}"
+else
+    downloadName="${temp}/${APP_BASE}"
+fi
+downloadPath="${downloadName}${downloadExt}"
+
+
 # download the app
-if ! [ "$devmode" = "-t" -a -f ${dmgloc} ]; then
-    "${reldir}"/script/download/${APP_BASE}.sh $dmgloc $dryrun
+if ! [ "$devmode" = "-t" -a -f ${downloadPath} ]; then
+    "${reldir}"/script/download/${APP_BASE}.sh $downloadPath $dryrun
 fi
 
 
@@ -113,17 +122,30 @@ fi
 
 # install the app. Use cp -R to preserve symlinks
 printf "installing base browser app...\n"
-if [ "$dryrun" = "-d" ]; then
-    # special dryrun handling is required here due to all of the > and | characters
-    dryecho yes \| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${dmgloc} \> /dev/null 2\>\&1
-    dryecho rm -rf "${ABS_APP_PATH}"
-    dryecho cp -R "$temp"/mount/*.app "${ABS_APP_PATH}"
-    dryecho hdiutil detach "${temp}/mount" \> /dev/null 2\>\&1
+if [ "$downloadExt" = ".zip" ]; then
+    dryecho unzip ${downloadPath} -d ${downloadName}
+    if [ "$dryrun" = "-d" ]; then
+        # special dryrun handling is required here due to the | character
+        appDownloadPath="Chromium.app"
+    else
+        appDownloadPath=$(find ${downloadName} -name "Chromium.app" | head -n 1)
+    fi
+    dryecho mv "${appDownloadPath}" "${ABS_APP_PATH}"
+    dryecho rm -rf ${downloadName}
 else
-    yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${dmgloc} > /dev/null 2>&1
-    rm -rf "${ABS_APP_PATH}"
-    cp -R "$temp"/mount/*.app "${ABS_APP_PATH}"
-    hdiutil detach "${temp}/mount" > /dev/null 2>&1
+    # for now assume this is a .dmg
+    if [ "$dryrun" = "-d" ]; then
+        # special dryrun handling is required here due to all of the > and | characters
+        dryecho yes \| hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${downloadPath} \> /dev/null 2\>\&1
+        dryecho rm -rf "${ABS_APP_PATH}"
+        dryecho cp -R "$temp"/mount/*.app "${ABS_APP_PATH}"
+        dryecho hdiutil detach "${temp}/mount" \> /dev/null 2\>\&1
+    else
+        yes | hdiutil attach -noverify -nobrowse -mountpoint "${temp}/mount" ${downloadPath} > /dev/null 2>&1
+        rm -rf "${ABS_APP_PATH}"
+        cp -R "$temp"/mount/*.app "${ABS_APP_PATH}"
+        hdiutil detach "${temp}/mount" > /dev/null 2>&1
+    fi
 fi
 printf "done\n\n"
 
