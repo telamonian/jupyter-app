@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # This outer wrapper gets installed to the path where the original exe was.
-# Its job is to set up a new terminal window, then to run the inner wrapper inside that terminal.
+# Its job is to set up a new terminal window, then to run the mid wrapper inside that terminal.
 
 term_name="${TERM_NAME}"
 mid_wrap="${ABS_MID_WRAP}"

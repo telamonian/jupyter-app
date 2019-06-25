@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# This outer wrapper gets installed to the path where the original exe was.
-# Its job is to set up a new terminal window, then to run the inner wrapper inside that terminal.
+# This mid wrapper is installed alongside the outer wrapper.
+# Its job is to set up the virtual env (if specified), then run the actual `jupyter notebook/lab` command.
 
 virtual_env="${VIRTUAL_ENV}"
 jupyter_bin="${JUPYTER_BIN}"
