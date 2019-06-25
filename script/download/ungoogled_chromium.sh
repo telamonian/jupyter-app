@@ -11,7 +11,7 @@ if [ "$2" = "-d" ]; then
     alias dryecho='echo'
 fi
 
-printf "downloading chromium ungoogled...\n"
+printf "downloading ungoogled chromium...\n"
 
 # get the feed with the info on the latest version
 FEED=$(curl https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-binaries/master/feed.xml 2>/dev/null | cat)

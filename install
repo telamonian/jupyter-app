@@ -221,7 +221,7 @@ if [ "$EXTENSIONS" = true ]; then
     printf "Adding extension manifests to \"${ABS_EXTENSION_JSON}\"...\n"
     # create the External Extensions dir if it doesn't exist
     dryecho mkdir -p "${ABS_EXTENSION_JSON}"
-    for extjson in "${ABS_EXTENSION_JSON_SRC}"; do
+    for extjson in ${ABS_EXTENSION_JSON_SRC}; do
         dryecho cp "${extjson}" "${ABS_EXTENSION_JSON}"
     done
     printf "done\n\n"
