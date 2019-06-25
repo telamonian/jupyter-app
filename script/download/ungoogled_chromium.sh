@@ -3,7 +3,7 @@
 shopt -s expand_aliases
 set -e
 
-dmgloc=$1
+dmgPath=$1
 
 # define the dryrun echo command as appropriate
 alias dryecho=
@@ -11,7 +11,7 @@ if [ "$2" = "-d" ]; then
     alias dryecho='echo'
 fi
 
-printf "downloading chromium...\n"
+printf "downloading chromium ungoogled...\n"
 
 # get the feed with the info on the latest version
 FEED=$(curl https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-binaries/master/feed.xml 2>/dev/null | cat)
@@ -26,6 +26,6 @@ DOWNLOAD_PAGE_URL=$(echo "${FEED}" | grep "<link href.*macos/${VERSION}.*>" | se
 URL=$(curl "${DOWNLOAD_PAGE_URL}" 2>/dev/null | grep macos.dmg | sed -e "s/.*<a href=\"\(http.*macos.dmg\)\">.*/\1/g")
 
 # do the actual download. -L to follow redirects
-dryecho curl -L $URL -o ${dmgloc}
+dryecho curl -L $URL -o "${dmgPath}.dmg"
 
 printf "...done\n\n"
