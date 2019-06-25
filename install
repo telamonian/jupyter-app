@@ -123,15 +123,20 @@ fi
 # install the app. Use cp -R to preserve symlinks
 printf "installing base browser app...\n"
 if [ "$downloadExt" = ".zip" ]; then
-    dryecho unzip ${downloadPath} -d ${downloadName}
-    if [ "$dryrun" = "-d" ]; then
-        # special dryrun handling is required here due to the | character
-        appDownloadPath="Chromium.app"
-    else
-        appDownloadPath=$(find ${downloadName} -name "Chromium.app" | head -n 1)
-    fi
-    dryecho mv "${appDownloadPath}" "${ABS_APP_PATH}"
+    # existing unzip dir can cause problems, get rid of it
     dryecho rm -rf ${downloadName}
+    if [ "$dryrun" = "-d" ]; then
+        # special dryrun handling is required here due to the > and | characters
+        dryecho unzip ${downloadPath} -d ${downloadName} \> /dev/null 2\>\&1
+        appDownloadPath="Chromium.app"
+        dryecho mv "${appDownloadPath}" "${ABS_APP_PATH}"
+        dryecho rm -rf ${downloadName}
+    else
+        unzip ${downloadPath} -d ${downloadName} > /dev/null 2>&1
+        appDownloadPath=$(find ${downloadName} -name "Chromium.app" | head -n 1)
+        mv "${appDownloadPath}" "${ABS_APP_PATH}"
+        rm -rf ${downloadName}
+    fi
 else
     # for now assume this is a .dmg
     if [ "$dryrun" = "-d" ]; then
