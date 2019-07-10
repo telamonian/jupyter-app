@@ -61,9 +61,13 @@ sedvar() {
     shift 1
 
     for var in $@; do
-        # the \$[{]* ... [}]* part will match vars with or without curly braces
-        dryecho sed -i '' "s#\$[{]*$var[}]*#${!var}#g" ${fname}
+        # the \$[{]* ... [}]* part will match vars with or without curly braces.
+        # The -i.bak flag ensures that this command is osx/linux universal
+        dryecho sed -i.bak "s#\$[{]*$var[}]*#${!var}#g" ${fname}
     done
+
+    # clean up sed backup
+    rm "${fname}.bak"
 }
 
 # replace the value for a key in a .strings file

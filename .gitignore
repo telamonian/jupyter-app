@@ -28,3 +28,8 @@ old_*
 
 # vim tmp files
 *.swp
+
+# browser archives for testing
+/*.dmg
+/*.zip
+
