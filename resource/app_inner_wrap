@@ -6,26 +6,8 @@
 app_support="${ABS_APP_SUPPORT_PATH}"
 app_bin="${ABS_APP_BIN}"
 
-# get the pid of the jupyter server that launches this script
-PARENT_PID=$(ps -o ppid= -p $$)
-
 # create the user-data-dir, if necessary
 mkdir -p ${app_support}
 
 # start up a new instance of chrome with the appropriate user-data-dir
-"${app_bin}" --user-data-dir="${app_support}" "$@" > /dev/null 2>&1 &
-
-# record the browser process's pid
-PID=$!
-
-# wait until the browser quits
-wait $PID
-
-# kill any children of the jupyter server
-pkill -P $PARENT_PID
-
-# kill the jupyter server itself. Like hiting ctrl-c twice
-kill -s SIGINT $PARENT_PID
-# need to wait a tic between signals
-sleep .1
-kill -s SIGINT $PARENT_PID
+"${app_bin}" --user-data-dir="${app_support}" "$@" > /dev/null 2>&1
