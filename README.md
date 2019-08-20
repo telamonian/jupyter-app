@@ -17,7 +17,7 @@ A standard OS X `.app` that, when double-clicked, starts `jupyter notebook` in a
     $ ./install
     ```
 
-- This will create a new app at `/Applications/Jupyter.app` that will, when opened, run a new instance of Jupyter Notebook, start up an independent browser, and redirect the browser to the root of your Notebook tree.
+- This will create a new app at `/Applications/Jupyter.app` that will, when opened, run a new instance of JupyterLab, start up an independent browser, and redirect the browser to the JupyterLab page.
 - `./install -d` will perform a dryrun of the installation. In this mode, all commands are printed to `stdout` instead of executed.
 
 # Uninstallation
@@ -40,8 +40,8 @@ The default install should work in most cases. However, if you want to customize
     - Sets the installation directory for Jupyter app. When `./install` is run, the new app will be created at `${APP_DIR}/${APP_NAME}.app`.
     - Default = `/Applications`
 - `JUPYTER_CMD`
-    - Should be "notebook" for standard jupyter notebook, or "lab" for jupyterlab.
-    - Default = `"notebook"`
+    - Should be "lab" for jupyterlab, or "notebook" for standard jupyter notebook.
+    - Default = `"lab"`
 - `APP_BASE`
     - The browser used by Jupyter app. Needs to be one of chrome | chromium.
     - Default = `chromium`
