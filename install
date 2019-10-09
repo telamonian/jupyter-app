@@ -189,7 +189,7 @@ printf "done\n\n"
 printf "copying mid wrapper script over to app...\n"
 dryecho cp "${ABS_MID_WRAP_SRC}" "${ABS_MID_WRAP}"
 printf "setting vars in mid wrapper script...\n"
-sedvar "${ABS_MID_WRAP}" ABS_APP_SUPPORT_PATH ABS_APP_BIN VIRTUAL_ENV JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP BROWSER_CMD
+sedvar "${ABS_MID_WRAP}" VIRTUAL_ENV JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP BROWSER_CMD
 printf "done\n\n"
 
 

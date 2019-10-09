@@ -3,9 +3,6 @@
 # This mid wrapper is installed alongside the outer wrapper.
 # Its job is to set up the virtual env (if specified), then run the actual `jupyter notebook/lab` command.
 
-app_support="${ABS_APP_SUPPORT_PATH}"
-app_bin="${ABS_APP_BIN}"
-
 virtual_env="${VIRTUAL_ENV}"
 jupyter_bin="${JUPYTER_BIN}"
 jupyter_cmd="${JUPYTER_CMD}"
@@ -23,23 +20,19 @@ if [ -n "$virtual_env" ]; then
     source ${virtual_env}
 fi
 
-# create the user-data-dir, if necessary
-mkdir -p ${app_support}
-
 # prestart the browser and get its pid
-"${app_bin}" --no-startup-window --user-data-dir="${app_support}" > /dev/null 2>&1 &
+${inner_wrap} --no-startup-window &
 
 APP_PID=$!
 
-# --browser gets passed along to the `webbrowser` module. See jupyter/notebook/notebook/notebookapp.py:1732
+# --browser gets passed along to the `webbrowser` module.
+# The "%s" in browser_cmd get substituted with the jupyter url.
+# See jupyter/notebook/notebook/notebookapp.py:1732
 jupyter_bin=$(which "${jupyter_bin}")
 ${jupyter_bin} ${jupyter_cmd} --notebook-dir=${notebook_dir} --browser="${inner_wrap} ${browser_cmd}" &
 
 JUPYTER_PID=$!
 trap "kill -s SIGTERM $JUPYTER_PID; wait $JUPYTER_PID; exit" SIGINT
-
-#echo "JUPYTER_PID: $JUPYTER_PID"
-#echo "APP_PID: $APP_PID"
 
 # wait for the browser to die
 wait $APP_PID
