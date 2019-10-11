@@ -27,22 +27,29 @@ See the [JupyterLab docs](https://jupyterlab.readthedocs.io/en/stable/getting_st
 - Open a terminal and enter the following lines:
 
     ```bash
-    cd <your-jupyter-app-repo-path>
+    git clone https://github.com/telamonian/jupyter-app.git
+    cd jupyter-app
     ./install
     ```
 
-- This will create a new app at `/Applications/Jupyter.app` that will, when opened, run a new instance of JupyterLab, start up an independent browser, and redirect the browser to the JupyterLab page.
-- `./install -d` will perform a dryrun of the installation. In this mode, all commands are printed to `stdout` instead of executed.
+    This will create a new app at `/Applications/Jupyter.app` that will, when opened, run a new instance of JupyterLab, start up an independent browser, and redirect the browser to the JupyterLab page.
 
-# Uninstallation
-- Open a terminal and enter the following lines::
+- You can perform a dryrun of the installation by adding a `-d` flag to the `install` command:
 
     ```bash
-    cd <your-jupyter-app-repo-path>
+    ./install -d
+    ```
+
+    In this mode, all commands are printed to `stdout` instead of executed.
+
+# Uninstallation
+- Open a terminal, `cd` to your `jupyter-app` repo directory, then enter the following single command:
+
+    ```bash
     ./uninstall
     ```
 
-- `./uninstall -d` will perform a dryrun of the uninstallation. In this mode, all commands are printed to `stdout` instead of executed.
+    You can also perform a dryrun of the uninstall by adding a `-d` flag to the command.
 
 # More info
 
