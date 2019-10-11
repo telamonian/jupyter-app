@@ -18,7 +18,7 @@ BRAND_ID="TEL"
 ## names and relative paths
 # relative paths (with respect to ABS_ROOT) of important directories
 RESOURCE="resource"
-EXTENSION_JSON="${RESOURCE}"/external_extensions_json
+EXTENSION_JSON="${RESOURCE}"/chrome_extension_specs
 SCRIPT="script"
 
 # names of important files

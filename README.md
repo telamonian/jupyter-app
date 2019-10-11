@@ -99,7 +99,7 @@ The default install should work in most cases. However, if you want to customize
     - Default = none
     
 ## Adding your own themes/extensions to the automated installer
-- More information to come. For now, take a peek at `resource/external_extensions_json` in the repo and [this Chrome dev page](https://developer.chrome.com/extensions/external_extensions) if you want to know more.
+- More information to come. For now, take a peek at `resource/chrome_extension_specs` in the repo and [this Chrome dev page](https://developer.chrome.com/extensions/external_extensions) if you want to know more.
 
 ## The schpiel
 
