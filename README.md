@@ -96,11 +96,11 @@ The default install should work in most cases. However, if you want to customize
 
 ## The schpiel
 
-I've been a user of IPython and Jupyter for years, and I'm a big fan. The notebooks are the perfect middle ground in between coding on the command line and full-on scripting. My biggest complaint is that their performance, while not abysmal, is not so great. When I have a long notebook, or a short notebook with 4 or 5 figures or long output cells, there tends to be quite a bit of lag.
+I've been a user of IPython and Jupyter notebooks for years (in fact, I'm now a core developer for JupyterLab). The notebooks are the perfect middle ground in between coding on the command line and full-on scripting. My biggest complaint is that their performance, while not abysmal, is not so great. When I have a long notebook, or a short notebook with 4 or 5 figures or long output cells, there tends to be quite a bit of lag.
 
-So what I've wanted for a while is a dedicated Jupyter application, one that isn't bogged down by unnecessary extensions (adblock, for example) or the 20 Wikipedia tabs I happen to have open at the time. After trying many different browsers and standalone projects (most notably [pineapple](https://github.com/nwhitehead/pineapple)), I found that none of them were as fast as stock Chrome when it came to running a notebook. I started to wonder if it was possible to run two separate copies of Chrome side-by-side... and well, after a year of tinkering, here we are.
+So what I've wanted for a while is a dedicated Jupyter application, one that isn't bogged down by unnecessary extensions (adblock, for example) or the 20 Wikipedia tabs I happen to have open at the time. After trying many different browsers and standalone projects (most notably [pineapple](https://github.com/nwhitehead/pineapple)), I found that none of them were as fast as stock Chrome when it came to running a notebook. I started to wonder if it was possible to run two separate copies of Chrome side-by-side... and, well, after a year or-so of intermittent tinkering, I got it to work.
 
-I figured that a patched copy of Chrome would be hard to maintain with the march of their versions, not to mention the copyright issues. Instead, I designed Jupyter-app as a set of wrappers, and made only minimal changes to the underlying app and its contents. So far this approach has worked out well, as I've been able to get Chrome to do (almost) everything I've wanted by tweaking the behavior of the program during its kickoff.
+I figured that a patched copy of Chrome would be hard to maintain with the march of their versions, not to mention the copyright issues. Instead, I designed Jupyter-app as a set of wrappers, and made only minimal changes to the underlying app and its contents. So far this approach has worked out well, as I've been able to get Chrome to do everything I've wanted by tweaking the behavior of the program during its kickoff.
 
 ## Future work
 - Add a way to keep track of options used for latest install
@@ -121,3 +121,16 @@ The following items were previously under "Future work", but are now done:
 - ~~selectable terminal for launching the Jupyter Notebook instance (currently this is dependent upon `iTerm2`)~~
     - Done!
     
+# The next version of `jupyter-app`
+
+In part, this project has been a way to sharpen my bash scripting skills, and to answer an age-old question in the field of yak shaving studies: "how complicated of a program can you write using nothing but bash?".
+
+I feel like I've more or less come to a definitive answer to that question. Since the initial release of `jupyter-app`, I've added many features. Currently, I think I'm coming up against the limitations of bash, especially since OS X is stuck with bash `v3` (due to to licensing issues), and will never ship with bash `v4` preinstalled.
+
+Eventually, I plan to replace `jupyter-app` with a more flexible Python-based JupyterLab installation tool. Here's some features I'd like to add in the Python version:
+
+- Run cross-platform, and be able to install a working desktop app on OS X, Linux, and Windows.
+
+- Handle installation of JupyterLab itself.
+
+- Handle setup and management of JupyterLab compatible virtual environments, including setup of all data/config paths used by `jupyter`
