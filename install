@@ -67,7 +67,7 @@ sedvar() {
     done
 
     # clean up sed backup
-    rm "${fname}.bak"
+    dryecho rm "${fname}.bak"
 }
 
 # replace the value for a key in a .strings file
@@ -219,7 +219,11 @@ printf "done\n\n"
 
 # modify the localization strings. Fixes visible name in finder
 printf "Modifying app's localized .strings resources...\n"
-dryecho INFO_PLIST_STRINGS=$(find "${ABS_RESOURCES}" -name "InfoPlist.strings")
+if [ "$dryrun" = "-d" ]; then
+    INFO_PLIST_STRINGS="InfoPlist.strings"
+else
+    INFO_PLIST_STRINGS=$(find "${ABS_RESOURCES}" -name "InfoPlist.strings")
+fi
 dryecho sedStringsFile CFBundleDisplayName "${APP_NAME}" ${INFO_PLIST_STRINGS}
 dryecho sedStringsFile CFBundleName "${APP_NAME}" ${INFO_PLIST_STRINGS}
 printf "done\n\n"
