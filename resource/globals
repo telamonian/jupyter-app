@@ -25,10 +25,12 @@ SCRIPT="script"
 ICNS=app.icns
 if [ "${APP_BASE}" = "chrome" ]; then
     APP_BASE_BIN="Google Chrome"
+elif [ "${APP_BASE}" = "chrome_canary" ]; then
+    APP_BASE_BIN="Google Chrome Canary"
 elif [ "${APP_BASE}" = "chromium" ]; then
     APP_BASE_BIN="Chromium"
 else
-    echo "APP_BASE is ${APP_BASE}, must be one of: chrome | chromium" 1>&2
+    echo "APP_BASE is ${APP_BASE}, must be one of: chrome | chrome_canary | chromium" 1>&2
     exit 1
 fi
 APP_BIN="${APP_NAME}_bin"

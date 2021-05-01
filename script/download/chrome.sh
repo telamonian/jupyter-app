@@ -12,5 +12,5 @@ if [ "$2" = dryrun ]; then
 fi
 
 printf "downloading vanilla google chrome...\n"
-dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o "${dmgPath}.dmg"
+dryecho curl https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg -o "${dmgPath}"
 printf "done\n\n"

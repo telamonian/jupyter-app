@@ -167,9 +167,9 @@ dryecho rm -r "${temp}"
 printf "done\n\n"
 
 
-# change the icon
-printf "changing app icon to jupyter...\n"
-dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
+# rename the actual exe
+printf "renaming app executable...\n"
+dryecho mv "${ABS_APP_BIN_SRC}" "${ABS_APP_BIN}"
 printf "done\n\n"
 
 
@@ -195,21 +195,16 @@ dryecho sedStringsFile CFBundleName "${APP_NAME}" ${INFO_PLIST_STRINGS}
 printf "done\n\n"
 
 
-# optionally install any extension manifests to the new Chrome instance's 'Application Support' dir
-if [ "$EXTENSIONS" = true ]; then
-    printf "Adding extension manifests to \"${ABS_EXTENSION_JSON}\"...\n"
-    # create the External Extensions dir if it doesn't exist
-    dryecho mkdir -p "${ABS_EXTENSION_JSON}"
-    for extjson in ${ABS_EXTENSION_JSON_SRC}; do
-        dryecho cp "${extjson}" "${ABS_EXTENSION_JSON}"
-    done
-    printf "done\n\n"
-fi
+# modify the app's plist's exe to point to the script we just copied over
+printf "Modifying app's Info.plist to point to executable scripts...\n"
+dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "${ABS_CONTENTS}/Info.plist"
+printf "done\n\n"
+
 
 if [ "$JUPYTER_WRAP" = true ]; then
-    # rename the actual exe
-    printf "renaming app executable...\n"
-    dryecho mv "${ABS_APP_BIN_SRC}" "${ABS_APP_BIN}"
+    # change the icon for some good jupyter style
+    printf "changing app icon to jupyter...\n"
+    dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
     printf "done\n\n"
 
 
@@ -235,10 +230,21 @@ if [ "$JUPYTER_WRAP" = true ]; then
     printf "setting vars in inner wrapper script...\n"
     sedvar "${ABS_INNER_WRAP}" ABS_APP_SUPPORT_PATH ABS_APP_BIN
     printf "done\n\n"
+fi
 
 
-    # modify the app's plist's exe to point to the script we just copied over
-    printf "Modifying app's Info.plist to point to executable scripts...\n"
-    dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "${ABS_CONTENTS}/Info.plist"
+# optionally install any extension manifests to the new Chrome instance's 'Application Support' dir
+if [ "$EXTENSIONS" = true ]; then
+    printf "Adding extension manifests to \"${ABS_EXTENSION_JSON}\"...\n"
+    # create the External Extensions dir if it doesn't exist
+    dryecho mkdir -p "${ABS_EXTENSION_JSON}"
+    for extjson in ${ABS_EXTENSION_JSON_SRC}; do
+        dryecho cp "${extjson}" "${ABS_EXTENSION_JSON}"
+    done
     printf "done\n\n"
 fi
+
+
+## possible extra commands needed for chrome_canary install
+# xattr -lr /Applications/Chrome-canary.app/
+# sudo codesign -f -s - /Applications/Chrome-canary.app/Contents/MacOS/Chrome-canary
