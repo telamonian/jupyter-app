@@ -14,9 +14,14 @@
 #.ipynb
 .ipynb_checkpoints
 
-# jetbrains stuff
-.idea
+# jetbrains ide stuff
 *.iml
+.idea/
+
+# vscode ide stuff
+*.code-workspace
+.history
+.vscode
 
 # old or backup files
 bak_*
