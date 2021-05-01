@@ -3,11 +3,12 @@
 shopt -s expand_aliases
 set -e
 
-# set up command line parsing via getopts
 # Usage info
+# dev-mode-only -t switch omitted from printed help:
+#     -t    Download image file to CWD instead of a tmp dir (the default behavior).
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-cd]
+Usage: ${0##*/} [-hd]
 Install the Jupyter.app
 
     -h    Display this help and exit.
@@ -25,6 +26,7 @@ OPTIND=1
 # Resetting OPTIND is necessary if getopts was used previously in the script.
 # It is a good idea to make OPTIND local if you process options in a function.
 
+# set up command line parsing via getopts
 while getopts hdtr opt; do
     case $opt in
         h)  show_help
@@ -165,45 +167,9 @@ dryecho rm -r "${temp}"
 printf "done\n\n"
 
 
-# change the icon
-printf "changing app icon to jupyter...\n"
-dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
-printf "done\n\n"
-
-
 # rename the actual exe
 printf "renaming app executable...\n"
 dryecho mv "${ABS_APP_BIN_SRC}" "${ABS_APP_BIN}"
-printf "done\n\n"
-
-
-# copy over the outer wrapper script, which handles the terminal window
-printf "copying outer wrapper script over to app...\n"
-dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
-printf "setting vars in outer wrapper script...\n"
-sedvar "${ABS_OUTER_WRAP}" TERM_NAME ABS_MID_WRAP
-printf "done\n\n"
-
-
-# copy over the mid wrapper script, which launches the jupyter server
-printf "copying mid wrapper script over to app...\n"
-dryecho cp "${ABS_MID_WRAP_SRC}" "${ABS_MID_WRAP}"
-printf "setting vars in mid wrapper script...\n"
-sedvar "${ABS_MID_WRAP}" VIRTUAL_ENV JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP BROWSER_CMD
-printf "done\n\n"
-
-
-# copy over the inner wrapper script, which automatically passes certain arguments to the chrome bin
-printf "copying inner wrapper script over to app...\n"
-dryecho cp "${ABS_INNER_WRAP_SRC}" "${ABS_INNER_WRAP}"
-printf "setting vars in inner wrapper script...\n"
-sedvar "${ABS_INNER_WRAP}" ABS_APP_SUPPORT_PATH ABS_APP_BIN
-printf "done\n\n"
-
-
-# modify the app's plist's exe to point to the script we just copied over
-printf "Modifying app's Info.plist to point to executable scripts...\n"
-dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "${ABS_CONTENTS}/Info.plist"
 printf "done\n\n"
 
 
@@ -229,6 +195,44 @@ dryecho sedStringsFile CFBundleName "${APP_NAME}" ${INFO_PLIST_STRINGS}
 printf "done\n\n"
 
 
+# modify the app's plist's exe to point to the script we just copied over
+printf "Modifying app's Info.plist to point to executable scripts...\n"
+dryecho plutil -replace CFBundleExecutable -string "${APP_NAME}" "${ABS_CONTENTS}/Info.plist"
+printf "done\n\n"
+
+
+if [ "$JUPYTER_WRAP" = true ]; then
+    # change the icon for some good jupyter style
+    printf "changing app icon to jupyter...\n"
+    dryecho cp "${ABS_ICONS_SRC}" "${ABS_ICONS}"
+    printf "done\n\n"
+
+
+    # copy over the outer wrapper script, which handles the terminal window
+    printf "copying outer wrapper script over to app...\n"
+    dryecho cp "${ABS_OUTER_WRAP_SRC}" "${ABS_OUTER_WRAP}"
+    printf "setting vars in outer wrapper script...\n"
+    sedvar "${ABS_OUTER_WRAP}" TERM_NAME ABS_MID_WRAP
+    printf "done\n\n"
+
+
+    # copy over the mid wrapper script, which launches the jupyter server
+    printf "copying mid wrapper script over to app...\n"
+    dryecho cp "${ABS_MID_WRAP_SRC}" "${ABS_MID_WRAP}"
+    printf "setting vars in mid wrapper script...\n"
+    sedvar "${ABS_MID_WRAP}" VIRTUAL_ENV JUPYTER_BIN JUPYTER_CMD JUPYTER_NOTEBOOK_DIR ABS_INNER_WRAP BROWSER_CMD
+    printf "done\n\n"
+
+
+    # copy over the inner wrapper script, which automatically passes certain arguments to the chrome bin
+    printf "copying inner wrapper script over to app...\n"
+    dryecho cp "${ABS_INNER_WRAP_SRC}" "${ABS_INNER_WRAP}"
+    printf "setting vars in inner wrapper script...\n"
+    sedvar "${ABS_INNER_WRAP}" ABS_APP_SUPPORT_PATH ABS_APP_BIN
+    printf "done\n\n"
+fi
+
+
 # optionally install any extension manifests to the new Chrome instance's 'Application Support' dir
 if [ "$EXTENSIONS" = true ]; then
     printf "Adding extension manifests to \"${ABS_EXTENSION_JSON}\"...\n"
@@ -239,3 +243,8 @@ if [ "$EXTENSIONS" = true ]; then
     done
     printf "done\n\n"
 fi
+
+
+## possible extra commands needed for chrome_canary install
+# xattr -lr /Applications/Chrome-canary.app/
+# sudo codesign -f -s - /Applications/Chrome-canary.app/Contents/MacOS/Chrome-canary
